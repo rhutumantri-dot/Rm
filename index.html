@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Stock Titan — Market Dashboard</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg:            #f4f4f2;
+    --surface-1:     #fcfcfb;
+    --surface-2:     #f0efec;
+    --border:        #e2e1dc;
+    --text-primary:  #0b0b0b;
+    --text-secondary:#52514e;
+    --text-muted:    #86857f;
+    --series-1:      #2a78d6;
+    --series-1-soft: rgba(42,120,214,0.14);
+    --series-2:      #008300;
+    --series-3:      #e87ba4;
+    --series-4:      #eda100;
+    --series-5:      #1baf7a;
+    --grid:          #e8e7e2;
+    --good:          #0ca30c;
+    --critical:      #d03b3b;
+    --shadow:        0 1px 2px rgba(0,0,0,.05), 0 8px 24px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --bg:            #121211;
+      --surface-1:     #1a1a19;
+      --surface-2:     #232321;
+      --border:        #33322f;
+      --text-primary:  #ffffff;
+      --text-secondary:#c3c2b7;
+      --text-muted:    #8a897f;
+      --series-1:      #3987e5;
+      --series-1-soft: rgba(57,135,229,0.18);
+      --series-2:      #34b334;
+      --series-3:      #d55181;
+      --series-4:      #c98500;
+      --series-5:      #199e70;
+      --grid:          #2b2b28;
+      --good:          #34c034;
+      --critical:      #e35b5b;
+      --shadow:        0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg:            #121211;
+    --surface-1:     #1a1a19;
+    --surface-2:     #232321;
+    --border:        #33322f;
+    --text-primary:  #ffffff;
+    --text-secondary:#c3c2b7;
+    --text-muted:    #8a897f;
+    --series-1:      #3987e5;
+    --series-1-soft: rgba(57,135,229,0.18);
+    --series-2:      #34b334;
+    --series-3:      #d55181;
+    --series-4:      #c98500;
+    --series-5:      #199e70;
+    --grid:          #2b2b28;
+    --good:          #34c034;
+    --critical:      #e35b5b;
+    --shadow:        0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 28px 20px 64px; }
+
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 24px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 40px; height: 40px; border-radius: 10px; flex: none;
+    background: linear-gradient(135deg, var(--series-1), var(--series-5));
+    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 20px;
+    box-shadow: var(--shadow);
+  }
+  .brand h1 { font-size: 19px; margin: 0; letter-spacing: -.2px; }
+  .brand p { margin: 0; font-size: 12.5px; color: var(--text-muted); }
+  .toggle {
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
+    border-radius: 999px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-weight: 600;
+  }
+  .toggle:hover { color: var(--text-primary); }
+
+  /* Hero */
+  .hero {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px;
+    padding: 22px 24px; box-shadow: var(--shadow); margin-bottom: 20px;
+    display: grid; grid-template-columns: 1.1fr 1.3fr; gap: 24px; align-items: center;
+  }
+  @media (max-width: 720px) { .hero { grid-template-columns: 1fr; } }
+  .ticker-row { display: flex; align-items: baseline; gap: 10px; }
+  .ticker { font-size: 14px; font-weight: 700; letter-spacing: .5px; color: var(--text-secondary); }
+  .ticker-name { font-size: 13px; color: var(--text-muted); }
+  .price { font-size: 46px; font-weight: 800; letter-spacing: -1.5px; margin: 6px 0 4px; }
+  .chg { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
+  .chg .pill { padding: 3px 9px; border-radius: 8px; font-size: 13.5px; }
+  .up   { color: var(--good); }
+  .up .pill   { background: color-mix(in srgb, var(--good) 15%, transparent); }
+  .down { color: var(--critical); }
+  .down .pill { background: color-mix(in srgb, var(--critical) 15%, transparent); }
+  .updated { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
+
+  /* Stat tiles */
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  @media (max-width: 720px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+  .tile {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px;
+    padding: 14px 16px; box-shadow: var(--shadow);
+  }
+  .tile .k { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; }
+  .tile .v { font-size: 22px; font-weight: 700; margin-top: 5px; letter-spacing: -.5px; }
+  .tile .sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+  /* Cards / charts */
+  .grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px;
+    padding: 18px 20px 12px; box-shadow: var(--shadow); margin-bottom: 20px;
+  }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+  .card-head h2 { font-size: 15px; margin: 0; }
+  .card-head .meta { font-size: 12.5px; color: var(--text-muted); }
+  .rangebtns { display: flex; gap: 4px; }
+  .rangebtns button {
+    border: 1px solid var(--border); background: transparent; color: var(--text-secondary);
+    font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 8px; cursor: pointer;
+  }
+  .rangebtns button[aria-pressed="true"] { background: var(--series-1); color: #fff; border-color: transparent; }
+
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .axis text { fill: var(--text-muted); font-size: 11px; }
+  .gridline { stroke: var(--grid); stroke-width: 1; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--text-secondary); margin-top: 6px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+
+  /* Tooltip */
+  .tt {
+    position: fixed; pointer-events: none; z-index: 30; opacity: 0; transition: opacity .08s;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: var(--shadow); padding: 8px 11px; font-size: 12.5px; color: var(--text-primary);
+    min-width: 120px;
+  }
+  .tt .tt-h { color: var(--text-muted); font-size: 11.5px; margin-bottom: 3px; }
+  .tt .tt-row { display: flex; justify-content: space-between; gap: 16px; }
+  .tt b { font-variant-numeric: tabular-nums; }
+
+  /* peer bars */
+  .peer { display: grid; grid-template-columns: 92px 1fr auto; align-items: center; gap: 10px; margin: 9px 0; font-size: 13px; }
+  .peer .pname { color: var(--text-secondary); font-weight: 600; }
+  .peer .ptrack { background: var(--surface-2); border-radius: 6px; height: 20px; overflow: hidden; }
+  .peer .pfill { height: 100%; border-radius: 6px; }
+  .peer .pval { font-variant-numeric: tabular-nums; color: var(--text-primary); font-weight: 600; }
+
+  footer { margin-top: 28px; font-size: 12px; color: var(--text-muted); text-align: center; line-height: 1.7; }
+  .note { background: color-mix(in srgb, var(--series-4) 12%, transparent); border: 1px solid color-mix(in srgb, var(--series-4) 35%, transparent);
+          color: var(--text-secondary); border-radius: 10px; padding: 10px 14px; font-size: 12.5px; margin-bottom: 20px; }
+  table.data { border-collapse: collapse; width: 100%; font-size: 12.5px; margin-top: 8px; }
+  table.data th, table.data td { text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+  table.data th:first-child, table.data td:first-child { text-align: left; }
+  details.tableview summary { cursor: pointer; color: var(--text-muted); font-size: 12px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark">T</div>
+      <div>
+        <h1>Stock Titan</h1>
+        <p>Large-cap market intelligence dashboard</p>
+      </div>
+    </div>
+    <button class="toggle" id="themeBtn" type="button">◐ Theme</button>
+  </header>
+
+  <div class="note">
+    Illustrative dataset for layout demonstration. Wire the <code>screener</code> MCP server output into <code>DATA</code> in the script below to render live quotes.
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div>
+      <div class="ticker-row">
+        <span class="ticker" id="h-ticker">TITAN</span>
+        <span class="ticker-name" id="h-name">Titan Industries Corp · NASDAQ</span>
+      </div>
+      <div class="price" id="h-price">$0.00</div>
+      <div class="chg up" id="h-chg">
+        <span id="h-chg-abs">+0.00</span>
+        <span class="pill" id="h-chg-pct">+0.00%</span>
+        <span style="color:var(--text-muted);font-weight:500;font-size:13px">today</span>
+      </div>
+      <div class="updated" id="h-updated">Delayed quote · demo data</div>
+    </div>
+    <div>
+      <div class="card-head" style="margin-bottom:8px">
+        <span class="meta">90-day trend</span>
+      </div>
+      <svg id="spark" viewBox="0 0 520 140" role="img" aria-label="90 day price sparkline"></svg>
+    </div>
+  </section>
+
+  <!-- TILES -->
+  <section class="tiles" id="tiles"></section>
+
+  <div class="grid">
+    <!-- PRICE CHART -->
+    <div>
+      <div class="card">
+        <div class="card-head">
+          <h2>Price history</h2>
+          <div class="rangebtns" id="ranges" role="group" aria-label="Time range">
+            <button data-days="30" type="button">1M</button>
+            <button data-days="90" type="button" aria-pressed="true">3M</button>
+            <button data-days="180" type="button">6M</button>
+          </div>
+        </div>
+        <svg id="priceChart" viewBox="0 0 720 320" role="img" aria-label="Price history line chart"></svg>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--series-1)"></i> TITAN close</span>
+          <span><i class="swatch" style="background:var(--series-4)"></i> 20-day moving average</span>
+        </div>
+        <details class="tableview"><summary>View as table</summary>
+          <div style="max-height:180px;overflow:auto"><table class="data" id="priceTable"></table></div>
+        </details>
+      </div>
+
+      <!-- VOLUME -->
+      <div class="card">
+        <div class="card-head">
+          <h2>Trading volume</h2>
+          <span class="meta">shares / day (millions)</span>
+        </div>
+        <svg id="volChart" viewBox="0 0 720 200" role="img" aria-label="Daily trading volume bar chart"></svg>
+      </div>
+    </div>
+
+    <!-- SIDE COLUMN -->
+    <div>
+      <!-- PEERS -->
+      <div class="card">
+        <div class="card-head"><h2>Market cap vs. peers</h2><span class="meta">$ trillions</span></div>
+        <div id="peers"></div>
+      </div>
+
+      <!-- REVENUE MIX -->
+      <div class="card">
+        <div class="card-head"><h2>Revenue by segment</h2><span class="meta">TTM</span></div>
+        <svg id="donut" viewBox="0 0 240 240" role="img" aria-label="Revenue by segment donut chart" style="max-width:240px;margin:4px auto 0"></svg>
+        <div class="legend" id="donutLegend" style="justify-content:center"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Stock Titan · demonstration dashboard · built with a colorblind-safe, theme-aware palette.<br/>
+    Not investment advice. Figures are illustrative.
+  </footer>
+</div>
+
+<div class="tt" id="tt"></div>
+
+<script>
+/* ------------------------------------------------------------------ *
+ * DATA — replace this block with live output from the screener MCP.  *
+ * ------------------------------------------------------------------ */
+const DATA = (() => {
+  // deterministic pseudo-random walk so the demo is stable across loads
+  let seed = 20260719;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+  const N = 180, start = 214;
+  const prices = [], vols = [], dates = [];
+  let p = start;
+  const today = new Date('2026-07-17T00:00:00');
+  for (let i = N - 1; i >= 0; i--) {
+    const drift = 0.18, shock = (rnd() - 0.47) * 6.2;
+    p = Math.max(120, p + drift + shock);
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    dates.push(d);
+    prices.push(+p.toFixed(2));
+    vols.push(+(28 + rnd() * 44 + (Math.abs(shock) > 4 ? 22 : 0)).toFixed(1));
+  }
+  return { ticker: 'TITAN', name: 'Titan Industries Corp · NASDAQ', prices, vols, dates };
+})();
+
+const peers = [
+  { name: 'MEGA',  cap: 3.42, self: false },
+  { name: 'TITAN', cap: 2.18, self: true  },
+  { name: 'VANTA', cap: 1.87, self: false },
+  { name: 'ORBIS', cap: 1.24, self: false },
+  { name: 'NOVA',  cap: 0.96, self: false },
+];
+const segments = [
+  { name: 'Cloud & Platform', val: 41, color: 'var(--series-1)' },
+  { name: 'Devices',          val: 27, color: 'var(--series-5)' },
+  { name: 'Services',         val: 19, color: 'var(--series-4)' },
+  { name: 'Advertising',      val: 13, color: 'var(--series-3)' },
+];
+
+/* ------------------------------------------------------------------ */
+const fmt  = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtD = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const tt   = document.getElementById('tt');
+function showTip(html, x, y) {
+  tt.innerHTML = html; tt.style.opacity = 1;
+  const r = tt.getBoundingClientRect();
+  let left = x + 14, top = y - r.height - 10;
+  if (left + r.width > window.innerWidth - 8) left = x - r.width - 14;
+  if (top < 8) top = y + 16;
+  tt.style.left = left + 'px'; tt.style.top = top + 'px';
+}
+function hideTip() { tt.style.opacity = 0; }
+
+/* ---- HERO ---- */
+(function hero() {
+  const p = DATA.prices, last = p[p.length - 1], prev = p[p.length - 2];
+  const abs = last - prev, pct = (abs / prev) * 100, up = abs >= 0;
+  document.getElementById('h-ticker').textContent = DATA.ticker;
+  document.getElementById('h-name').textContent = DATA.name;
+  document.getElementById('h-price').textContent = fmt(last);
+  const chg = document.getElementById('h-chg');
+  chg.className = 'chg ' + (up ? 'up' : 'down');
+  document.getElementById('h-chg-abs').textContent = (up ? '+' : '') + abs.toFixed(2);
+  document.getElementById('h-chg-pct').textContent = (up ? '▲ ' : '▼ ') + (up ? '+' : '') + pct.toFixed(2) + '%';
+  document.getElementById('h-updated').textContent =
+    'As of ' + DATA.dates[DATA.dates.length - 1].toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' · demo data';
+})();
+
+/* ---- TILES ---- */
+(function tiles() {
+  const p = DATA.prices;
+  const hi = Math.max(...p), lo = Math.min(...p);
+  const last = p[p.length - 1];
+  const items = [
+    { k: 'Market Cap', v: '$2.18T', sub: 'Mega-cap' },
+    { k: 'P/E Ratio',  v: '28.4',   sub: 'Fwd 24.1' },
+    { k: '52-Wk Range',v: '$' + Math.round(lo) + '–' + Math.round(hi), sub: (((last - lo) / (hi - lo)) * 100).toFixed(0) + '% of range' },
+    { k: 'Div. Yield', v: '0.62%',  sub: '$1.36 annual' },
+  ];
+  document.getElementById('tiles').innerHTML = items.map(i =>
+    `<div class="tile"><div class="k">${i.k}</div><div class="v">${i.v}</div><div class="sub">${i.sub}</div></div>`).join('');
+})();
+
+/* ---- generic line renderer ---- */
+function line(prices, dates, W, H, pad, opts = {}) {
+  const min = Math.min(...prices), max = Math.max(...prices);
+  const range = (max - min) || 1;
+  const x = i => pad.l + (i / (prices.length - 1)) * (W - pad.l - pad.r);
+  const y = v => pad.t + (1 - (v - min) / range) * (H - pad.t - pad.b);
+  const d = prices.map((v, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1)).join(' ');
+  return { min, max, x, y, d, W, H, pad };
+}
+
+/* ---- SPARKLINE ---- */
+(function spark() {
+  const svg = document.getElementById('spark');
+  const p = DATA.prices.slice(-90), dts = DATA.dates.slice(-90);
+  const W = 520, H = 140, pad = { l: 6, r: 6, t: 10, b: 8 };
+  const g = line(p, dts, W, H, pad);
+  const area = g.d + ` L ${g.x(p.length - 1).toFixed(1)} ${H - pad.b} L ${g.x(0).toFixed(1)} ${H - pad.b} Z`;
+  const up = p[p.length - 1] >= p[0];
+  const col = up ? 'var(--good)' : 'var(--critical)';
+  svg.innerHTML =
+    `<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+       <stop offset="0" stop-color="${col}" stop-opacity="0.22"/>
+       <stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+     <path d="${area}" fill="url(#sg)"/>
+     <path d="${g.d}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+     <circle cx="${g.x(p.length - 1).toFixed(1)}" cy="${g.y(p[p.length - 1]).toFixed(1)}" r="3.5" fill="${col}"/>`;
+})();
+
+/* ---- MOVING AVG ---- */
+function sma(arr, w) {
+  return arr.map((_, i) => {
+    if (i < w - 1) return null;
+    let s = 0; for (let j = i - w + 1; j <= i; j++) s += arr[j];
+    return +(s / w).toFixed(2);
+  });
+}
+
+/* ---- PRICE CHART (with crosshair) ---- */
+let curDays = 90;
+function renderPrice(days) {
+  curDays = days;
+  const svg = document.getElementById('priceChart');
+  const p = DATA.prices.slice(-days), dts = DATA.dates.slice(-days);
+  const ma = sma(DATA.prices, 20).slice(-days);
+  const W = 720, H = 320, pad = { l: 46, r: 14, t: 14, b: 26 };
+  const g = line(p, dts, W, H, pad);
+  const maPts = ma.map((v, i) => v == null ? null : [g.x(i), g.y(v)]).filter(Boolean);
+  const maD = maPts.map((pt, i) => (i ? 'L' : 'M') + pt[0].toFixed(1) + ' ' + pt[1].toFixed(1)).join(' ');
+  const area = g.d + ` L ${g.x(p.length - 1).toFixed(1)} ${H - pad.b} L ${g.x(0).toFixed(1)} ${H - pad.b} Z`;
+
+  // y gridlines
+  let grid = '', tCount = 4;
+  for (let i = 0; i <= tCount; i++) {
+    const val = g.min + (i / tCount) * (g.max - g.min);
+    const yy = g.y(val);
+    grid += `<line class="gridline" x1="${pad.l}" y1="${yy.toFixed(1)}" x2="${W - pad.r}" y2="${yy.toFixed(1)}"/>`;
+    grid += `<text x="${pad.l - 8}" y="${(yy + 4).toFixed(1)}" text-anchor="end" fill="var(--text-muted)" font-size="11">$${val.toFixed(0)}</text>`;
+  }
+  // x labels
+  let xlab = '';
+  [0, Math.floor(p.length / 2), p.length - 1].forEach(i => {
+    xlab += `<text x="${g.x(i).toFixed(1)}" y="${H - 6}" text-anchor="middle" fill="var(--text-muted)" font-size="11">${fmtD(dts[i])}</text>`;
+  });
+
+  svg.innerHTML =
+    `<defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+       <stop offset="0" stop-color="var(--series-1)" stop-opacity="0.20"/>
+       <stop offset="1" stop-color="var(--series-1)" stop-opacity="0"/></linearGradient></defs>
+     <g class="axis">${grid}${xlab}</g>
+     <path d="${area}" fill="url(#pg)"/>
+     <path d="${g.d}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+     <path d="${maD}" fill="none" stroke="var(--series-4)" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round"/>
+     <line id="cross" x1="0" y1="${pad.t}" x2="0" y2="${H - pad.b}" stroke="var(--text-muted)" stroke-width="1" opacity="0"/>
+     <circle id="cdot" r="4.5" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2" opacity="0"/>
+     <rect x="${pad.l}" y="${pad.t}" width="${W - pad.l - pad.r}" height="${H - pad.t - pad.b}" fill="transparent" id="phit"/>`;
+
+  const cross = svg.querySelector('#cross'), cdot = svg.querySelector('#cdot'), hit = svg.querySelector('#phit');
+  hit.addEventListener('mousemove', e => {
+    const r = svg.getBoundingClientRect();
+    const sx = (e.clientX - r.left) / r.width * W;
+    let i = Math.round((sx - pad.l) / (W - pad.l - pad.r) * (p.length - 1));
+    i = Math.max(0, Math.min(p.length - 1, i));
+    const px = g.x(i), py = g.y(p[i]);
+    cross.setAttribute('x1', px); cross.setAttribute('x2', px); cross.setAttribute('opacity', .5);
+    cdot.setAttribute('cx', px); cdot.setAttribute('cy', py); cdot.setAttribute('opacity', 1);
+    const maV = ma[i] != null ? `<div class="tt-row"><span style="color:var(--series-4)">20-day MA</span><b>${fmt(ma[i])}</b></div>` : '';
+    showTip(`<div class="tt-h">${dts[i].toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</div>
+             <div class="tt-row"><span style="color:var(--series-1)">Close</span><b>${fmt(p[i])}</b></div>${maV}`, e.clientX, e.clientY);
+  });
+  hit.addEventListener('mouseleave', () => { hideTip(); cross.setAttribute('opacity', 0); cdot.setAttribute('opacity', 0); });
+
+  // table
+  const rows = p.map((v, i) => `<tr><td>${fmtD(dts[i])}</td><td>${fmt(v)}</td><td>${ma[i] != null ? fmt(ma[i]) : '—'}</td></tr>`).reverse().join('');
+  document.getElementById('priceTable').innerHTML = `<thead><tr><th>Date</th><th>Close</th><th>20-day MA</th></tr></thead><tbody>${rows}</tbody>`;
+
+  document.querySelectorAll('#ranges button').forEach(b => b.setAttribute('aria-pressed', b.dataset.days == days ? 'true' : 'false'));
+}
+document.getElementById('ranges').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (b) renderPrice(+b.dataset.days);
+});
+renderPrice(90);
+
+/* ---- VOLUME ---- */
+(function volume() {
+  const svg = document.getElementById('volChart');
+  const days = 60;
+  const v = DATA.vols.slice(-days), dts = DATA.dates.slice(-days), pr = DATA.prices.slice(-days);
+  const W = 720, H = 200, pad = { l: 40, r: 14, t: 12, b: 24 };
+  const max = Math.max(...v);
+  const bw = (W - pad.l - pad.r) / days;
+  const y = val => pad.t + (1 - val / max) * (H - pad.t - pad.b);
+  let grid = '';
+  for (let i = 0; i <= 3; i++) {
+    const val = (i / 3) * max, yy = y(val);
+    grid += `<line class="gridline" x1="${pad.l}" y1="${yy.toFixed(1)}" x2="${W - pad.r}" y2="${yy.toFixed(1)}"/>`;
+    grid += `<text x="${pad.l - 8}" y="${(yy + 4).toFixed(1)}" text-anchor="end" fill="var(--text-muted)" font-size="11">${val.toFixed(0)}M</text>`;
+  }
+  let xlab = '';
+  [0, Math.floor(days / 2), days - 1].forEach(i => {
+    xlab += `<text x="${(pad.l + i * bw + bw / 2).toFixed(1)}" y="${H - 5}" text-anchor="middle" fill="var(--text-muted)" font-size="11">${fmtD(dts[i])}</text>`;
+  });
+  let bars = '';
+  v.forEach((val, i) => {
+    const x = pad.l + i * bw + 1.2, h = (H - pad.t - pad.b) * (val / max);
+    const up = i === 0 || pr[i] >= pr[i - 1];
+    bars += `<rect x="${x.toFixed(1)}" y="${y(val).toFixed(1)}" width="${(bw - 2.4).toFixed(1)}" height="${h.toFixed(1)}" rx="2"
+             fill="${up ? 'var(--series-1)' : 'var(--series-3)'}" opacity="0.9" data-i="${i}"></rect>`;
+  });
+  svg.innerHTML = `<g class="axis">${grid}${xlab}</g>${bars}`;
+  svg.querySelectorAll('rect[data-i]').forEach(r => {
+    r.addEventListener('mousemove', e => {
+      const i = +r.dataset.i;
+      r.setAttribute('opacity', '1');
+      showTip(`<div class="tt-h">${dts[i].toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
+               <div class="tt-row"><span>Volume</span><b>${v[i].toFixed(1)}M</b></div>
+               <div class="tt-row"><span>Close</span><b>${fmt(pr[i])}</b></div>`, e.clientX, e.clientY);
+    });
+    r.addEventListener('mouseleave', () => { hideTip(); r.setAttribute('opacity', '0.9'); });
+  });
+})();
+
+/* ---- PEERS ---- */
+(function peerBars() {
+  const max = Math.max(...peers.map(p => p.cap));
+  document.getElementById('peers').innerHTML = peers.map(p => {
+    const w = (p.cap / max * 100).toFixed(1);
+    const col = p.self ? 'var(--series-1)' : 'var(--series-5)';
+    return `<div class="peer">
+      <span class="pname" style="${p.self ? 'color:var(--series-1);font-weight:700' : ''}">${p.name}</span>
+      <span class="ptrack"><span class="pfill" style="width:${w}%;background:${col};opacity:${p.self ? 1 : .8}"></span></span>
+      <span class="pval">$${p.cap.toFixed(2)}T</span></div>`;
+  }).join('');
+})();
+
+/* ---- DONUT ---- */
+(function donut() {
+  const svg = document.getElementById('donut');
+  const total = segments.reduce((s, x) => s + x.val, 0);
+  const cx = 120, cy = 120, r = 84, sw = 30;
+  let a0 = -Math.PI / 2, gap = 0.035;
+  const arcs = segments.map(seg => {
+    const frac = seg.val / total, a1 = a0 + frac * Math.PI * 2;
+    const s = a0 + gap / 2, e = a1 - gap / 2;
+    const large = (e - s) > Math.PI ? 1 : 0;
+    const x1 = cx + r * Math.cos(s), y1 = cy + r * Math.sin(s);
+    const x2 = cx + r * Math.cos(e), y2 = cy + r * Math.sin(e);
+    a0 = a1;
+    return `<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${r} ${r} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}"
+             fill="none" stroke="${seg.color}" stroke-width="${sw}" stroke-linecap="round"
+             data-name="${seg.name}" data-val="${seg.val}"/>`;
+  }).join('');
+  svg.innerHTML = arcs +
+    `<text x="${cx}" y="${cy - 4}" text-anchor="middle" fill="var(--text-primary)" font-size="26" font-weight="800">$94B</text>
+     <text x="${cx}" y="${cy + 16}" text-anchor="middle" fill="var(--text-muted)" font-size="12">TTM revenue</text>`;
+  svg.querySelectorAll('path[data-name]').forEach(pth => {
+    pth.addEventListener('mousemove', e => {
+      pth.setAttribute('stroke-width', sw + 6);
+      showTip(`<div class="tt-h">${pth.dataset.name}</div><div class="tt-row"><span>Share</span><b>${pth.dataset.val}%</b></div>`, e.clientX, e.clientY);
+    });
+    pth.addEventListener('mouseleave', () => { hideTip(); pth.setAttribute('stroke-width', sw); });
+  });
+  document.getElementById('donutLegend').innerHTML = segments.map(s =>
+    `<span><i class="swatch" style="background:${s.color}"></i>${s.name} · ${s.val}%</span>`).join('');
+})();
+
+/* ---- THEME TOGGLE ---- */
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : cur === 'light' ? 'dark'
+    : (matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark');
+  document.documentElement.setAttribute('data-theme', next);
+  renderPrice(curDays); // re-render so SVG picks up new CSS var colors where needed
+});
+</script>
+</body>
+</html>
