@@ -310,7 +310,7 @@ function barChart(svgId, labels, values, opts) {
   values.forEach((v, i) => {
     const x = pad.l + i * bw + bw * 0.16, w = bw * 0.68, h = (H - pad.t - pad.b) * (v / max), cx = pad.l + i * bw + bw / 2;
     bars += `<rect x="${x.toFixed(1)}" y="${y(v).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${color}" opacity="0.92" data-i="${i}"/>`;
-    bars += `<text x="${cx.toFixed(1)}" y="${(y(v) - 6).toFixed(1)}" text-anchor="middle" fill="var(--text-secondary)" font-size="9.5" font-weight="700">${lfmt(v)}</text>`;
+    bars += `<text x="${cx.toFixed(1)}" y="${(y(v) - 6).toFixed(1)}" text-anchor="middle" fill="var(--text-secondary)" font-size="9" font-weight="700">${v.toLocaleString('en-IN')}</text>`;
     const parts = String(labels[i]).split(' ');
     xlab += `<text x="${(pad.l + i * bw + bw / 2).toFixed(1)}" y="${H - 22}" text-anchor="middle" fill="var(--text-muted)" font-size="10.5">${parts[0]}</text>`;
     if (parts[1]) xlab += `<text x="${(pad.l + i * bw + bw / 2).toFixed(1)}" y="${H - 9}" text-anchor="middle" fill="var(--text-muted)" font-size="9.5">${parts[1]}</text>`;
@@ -339,7 +339,7 @@ function signedBarChart(svgId, labels, values, opts) {
   values.forEach((v, i) => {
     const x = pad.l + i * bw + bw * 0.16, w = bw * 0.68, top = v >= 0 ? y(v) : y0, h = Math.max(1, Math.abs(y(v) - y0)), cx = pad.l + i * bw + bw / 2;
     bars += `<rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2.5" fill="${v >= 0 ? pos : neg}" opacity="0.92" data-i="${i}"/>`;
-    bars += `<text x="${cx.toFixed(1)}" y="${(v >= 0 ? y(v) - 6 : y(v) + 13).toFixed(1)}" text-anchor="middle" fill="var(--text-secondary)" font-size="9.5" font-weight="700">${lfmt(v)}</text>`;
+    bars += `<text x="${cx.toFixed(1)}" y="${(v >= 0 ? y(v) - 6 : y(v) + 13).toFixed(1)}" text-anchor="middle" fill="var(--text-secondary)" font-size="9" font-weight="700">${v.toLocaleString('en-IN')}</text>`;
     xlab += `<text x="${cx.toFixed(1)}" y="${H - 8}" text-anchor="middle" fill="var(--text-muted)" font-size="10.5">${labels[i]}</text>`;
   });
   svg.innerHTML = `<g class="axis">${grid}${xlab}</g>${bars}`;
@@ -384,7 +384,7 @@ function areaChart(svgId, labels, values, opts) {
 function groupedBarChart(svgId, labels, series) {
   const svg = document.getElementById(svgId);
   const n = labels.length, W = 560, H = 260, pad = { l: 46, r: 12, t: 16, b: 26 };
-  const max = Math.max(...series.flatMap(s => s.vals)) * 1.12;
+  const max = Math.max(...series.flatMap(s => s.vals)) * 1.34;
   const bw = (W - pad.l - pad.r) / n, iw = bw * 0.72 / series.length;
   const y = v => pad.t + (1 - v / max) * (H - pad.t - pad.b);
   let grid = '';
@@ -394,9 +394,9 @@ function groupedBarChart(svgId, labels, series) {
   let bars = '', xlab = '';
   labels.forEach((lab, i) => {
     const gx = pad.l + i * bw + bw * 0.14;
-    series.forEach((s, j) => { const x = gx + j * iw, h = (H - pad.t - pad.b) * (s.vals[i] / max);
-      bars += `<rect x="${x.toFixed(1)}" y="${y(s.vals[i]).toFixed(1)}" width="${iw.toFixed(1)}" height="${h.toFixed(1)}" rx="2.5" fill="${s.color}" opacity="0.92" data-i="${i}"/>`;
-      bars += `<text x="${(x + iw / 2).toFixed(1)}" y="${(y(s.vals[i]) - 4).toFixed(1)}" text-anchor="middle" fill="var(--text-muted)" font-size="8" font-weight="700">${kfmt(s.vals[i])}</text>`; });
+    series.forEach((s, j) => { const x = gx + j * iw, h = (H - pad.t - pad.b) * (s.vals[i] / max), cxb = x + iw / 2, vy = y(s.vals[i]);
+      bars += `<rect x="${x.toFixed(1)}" y="${vy.toFixed(1)}" width="${iw.toFixed(1)}" height="${h.toFixed(1)}" rx="2.5" fill="${s.color}" opacity="0.92" data-i="${i}"/>`;
+      bars += `<text transform="rotate(-90 ${cxb.toFixed(1)} ${(vy - 3).toFixed(1)})" x="${cxb.toFixed(1)}" y="${(vy - 3).toFixed(1)}" text-anchor="start" fill="var(--text-muted)" font-size="8" font-weight="700">${s.vals[i].toLocaleString('en-IN')}</text>`; });
     xlab += `<text x="${(pad.l + i * bw + bw / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" fill="var(--text-muted)" font-size="10.5">${lab}</text>`;
   });
   svg.innerHTML = `<g class="axis">${grid}${xlab}</g>${bars}`;
@@ -411,7 +411,7 @@ function groupedSignedBar(svgId, labels, series) {
   const svg = document.getElementById(svgId);
   const all = series.flatMap(s => s.vals);
   const n = labels.length, W = 1140, H = 300, pad = { l: 54, r: 14, t: 16, b: 28 };
-  const hi = Math.max(0, ...all), lo = Math.min(0, ...all), span = (hi - lo) || 1;
+  const hi = Math.max(0, ...all) * 1.12, lo = Math.min(0, ...all) * 1.12, span = (hi - lo) || 1;
   const bw = (W - pad.l - pad.r) / n, iw = bw * 0.76 / series.length;
   const y = v => pad.t + (1 - (v - lo) / span) * (H - pad.t - pad.b), y0 = y(0);
   let grid = '';
@@ -423,8 +423,9 @@ function groupedSignedBar(svgId, labels, series) {
   labels.forEach((lab, i) => {
     const gx = pad.l + i * bw + bw * 0.12;
     series.forEach((s, j) => { const v = s.vals[i], x = gx + j * iw, top = v >= 0 ? y(v) : y0, h = Math.max(1, Math.abs(y(v) - y0));
+      const cxb = x + iw / 2, ry = v >= 0 ? y(v) - 3 : y(v) + 3, anch = v >= 0 ? 'start' : 'end';
       bars += `<rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${iw.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${s.color}" opacity="0.92" data-i="${i}"/>`;
-      bars += `<text x="${(x + iw / 2).toFixed(1)}" y="${(v >= 0 ? y(v) - 4 : y(v) + 10).toFixed(1)}" text-anchor="middle" fill="var(--text-muted)" font-size="7.5" font-weight="700">${kfmt(v)}</text>`; });
+      bars += `<text transform="rotate(-90 ${cxb.toFixed(1)} ${ry.toFixed(1)})" x="${cxb.toFixed(1)}" y="${ry.toFixed(1)}" text-anchor="${anch}" fill="var(--text-muted)" font-size="7.5" font-weight="700">${v.toLocaleString('en-IN')}</text>`; });
     xlab += `<text x="${(pad.l + i * bw + bw / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" fill="var(--text-muted)" font-size="11">${lab}</text>`;
   });
   svg.innerHTML = `<g class="axis">${grid}${xlab}</g>${bars}`;
