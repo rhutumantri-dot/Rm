@@ -76,10 +76,11 @@ def financials(ticker: str, period: str = "annual") -> list[dict]:
         step = n - 1 - i  # older periods first
         rev = rev0 * (growth ** i)
         if period == "quarterly":
-            month = ((now.tm_mon - 1 - step * 3) % 12) + 1
-            year = now.tm_year - ((step * 3) // 12)
+            # Count months back from the current month, handling year wrap.
+            mi = (now.tm_year * 12 + (now.tm_mon - 1)) - step * 3
+            year, month = divmod(mi, 12)
             label = time.strftime("%b %Y", time.struct_time(
-                (year, month, 1, 0, 0, 0, 0, 0, 0)))
+                (year, month + 1, 1, 0, 0, 0, 0, 0, 0)))
             rev /= 4
         else:
             label = str(now.tm_year - 1 - step)
