@@ -166,14 +166,14 @@
       <div class="brand-mark">N</div>
       <div>
         <h1>Nifty 50 Dashboards</h1>
-        <p>Company financials from Screener.in exports</p>
+        <p>Company financials from Excel data</p>
       </div>
     </div>
     <button class="toggle" id="themeBtn" type="button">◐ Theme</button>
   </header>
   <div id="app"></div>
   <footer>
-    Nifty 50 company dashboards · financials rendered from Screener.in Excel exports.<br/>
+    Nifty 50 company dashboards · financials rendered from Excel data.<br/>
     Constituent list is indicative and may lag index reconstitutions. For information only — not investment advice.
   </footer>
 </div>
@@ -182,7 +182,7 @@
 
 <script>
 /* ================================================================== *
- *  STOCKS — data extracted verbatim from Screener.in Excel exports.   *
+ *  STOCKS — data extracted verbatim from the Excel exports.           *
  * ================================================================== */
 const FY = ['FY17','FY18','FY19','FY20','FY21','FY22','FY23','FY24','FY25','FY26'];
 const QLAB = ['Q3 FY24','Q4 FY24','Q1 FY25','Q2 FY25','Q3 FY25','Q4 FY25','Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'];
@@ -464,7 +464,7 @@ function renderHome() {
   app.innerHTML = `
     <div class="home-head">
       <h2>Nifty 50 — Company Dashboards</h2>
-      <p>${loaded.length} of ${NIFTY50.length} companies loaded from Screener.in exports. Click a loaded company to open its financial dashboard.</p>
+      <p>${loaded.length} of ${NIFTY50.length} companies loaded from Excel data. Click a loaded company to open its financial dashboard.</p>
     </div>
     <div class="section-title">Loaded dashboards · ${loaded.length}</div>
     <div class="feature-grid">${featured}</div>
@@ -524,7 +524,7 @@ function renderStock(sym) {
   ];
   app.innerHTML = `
     <div class="backlink" onclick="location.hash='#/'">← All Nifty 50</div>
-    <div class="banner"><b>Data snapshot.</b> Figures from the Screener.in export for <b>${st.name}</b> — point-in-time, not a live feed.
+    <div class="banner"><b>Data snapshot.</b> Figures from the Excel data for <b>${st.name}</b> — point-in-time, not a live feed.
       10 years of P&amp;L, 10 quarters, balance sheet &amp; cash flow. Amounts in ₹ crore unless noted; <b>FY</b> = year ended 31&nbsp;March.
       ${st.note ? '<br/><span style="color:var(--text-muted)">Note: ' + st.note + '</span>' : ''}</div>
     <section class="hero">
