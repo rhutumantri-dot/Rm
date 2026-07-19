@@ -684,10 +684,9 @@ function chartCard(id, title, meta, tall) {
 
 function renderStock(sym) {
   const st = STOCKS[sym], a = st.annual, k = kpis(st), up = k.chgPct >= 0;
-  const marginNow = a.netProfit.at(-1) / a.sales.at(-1) * 100;
-  const dg = Math.max(0, Math.min(40, Math.round(k.revCAGR)));
-  const dm = Math.max(1, Math.min(40, Math.round(marginNow)));
+  const dg = Math.max(0, Math.min(40, Math.round(k.profitCAGR)));
   const dpe = Math.max(10, Math.min(100, Math.round(k.pe)));
+  const dyr = 5;
   const tiles = [
     { k: 'P/E Ratio', v: k.pe.toFixed(1), sub: 'EPS ' + inr(k.eps) },
     { k: 'ROE', v: k.roe.toFixed(1) + '%', sub: 'Book ' + inr(k.book) },
@@ -734,20 +733,20 @@ function renderStock(sym) {
     <div class="section-title" style="margin-top:30px">If you believe…</div>
     <div class="believe">
       <div class="believe-in">
-        <div class="slider"><div class="slabel"><span>Revenue growth</span><b id="v-g">${dg}%</b></div>
-          <input type="range" id="s-g" min="0" max="40" step="1" value="${dg}" aria-label="Revenue growth"></div>
-        <div class="slider"><div class="slabel"><span>Net margin</span><b id="v-m">${dm}%</b></div>
-          <input type="range" id="s-m" min="1" max="40" step="1" value="${dm}" aria-label="Net margin"></div>
+        <div class="slider"><div class="slabel"><span>EPS CAGR</span><b id="v-g">${dg}%</b></div>
+          <input type="range" id="s-g" min="0" max="40" step="1" value="${dg}" aria-label="EPS CAGR"></div>
         <div class="slider"><div class="slabel"><span>Exit P/E</span><b id="v-pe">${dpe}</b></div>
           <input type="range" id="s-pe" min="10" max="100" step="1" value="${dpe}" aria-label="Exit P E"></div>
-        <div class="bnote">A 5-year what-if: revenue compounds at your growth rate, net profit = revenue × margin, and the year-5 price = EPS × exit P/E. Intrinsic value discounts that back at 11% a year. Illustrative scenario — not a forecast or recommendation.</div>
+        <div class="slider"><div class="slabel"><span>No. of years</span><b id="v-n">${dyr} yrs</b></div>
+          <input type="range" id="s-n" min="1" max="15" step="1" value="${dyr}" aria-label="Number of years"></div>
+        <div class="bnote">EPS compounds at the chosen CAGR over your holding period; the exit price = EPS × exit P/E, and intrinsic value discounts that back at 11% a year. Illustrative scenario — not a forecast or recommendation.</div>
       </div>
       <div class="believe-out">
         <div class="bout main"><div class="k">Intrinsic value <span style="text-transform:none;color:var(--text-muted);letter-spacing:0">· today</span></div>
           <div class="v" id="o-iv">₹—</div><div class="sub">vs current price ${inr(st.meta.currentPrice)}</div></div>
         <div class="bout"><div class="k">Upside</div><div class="v" id="o-up">—</div></div>
         <div class="bout"><div class="k">Expected CAGR</div><div class="v" id="o-cagr">—</div></div>
-        <div class="bout" style="grid-column:1/-1"><div class="k">Projected price · year 5</div><div class="v" id="o-pp" style="font-size:20px">—</div></div>
+        <div class="bout" style="grid-column:1/-1"><div class="k">Exit price · year <span id="o-ny">${dyr}</span></div><div class="v" id="o-pp" style="font-size:20px">—</div></div>
       </div>
     </div>`;
 
@@ -768,15 +767,16 @@ function renderStock(sym) {
 
   // "If you believe…" — live reverse valuation
   (function believe() {
-    const price = st.meta.currentPrice, rev0 = a.sales.at(-1), shares = k.shares, N = 5, disc = 0.11;
+    const price = st.meta.currentPrice, eps0 = k.eps, disc = 0.11;
     const el = id => document.getElementById(id);
     function calc() {
-      const g = +el('s-g').value / 100, m = +el('s-m').value / 100, pe = +el('s-pe').value;
+      const g = +el('s-g').value / 100, pe = +el('s-pe').value, N = +el('s-n').value;
       el('v-g').textContent = el('s-g').value + '%';
-      el('v-m').textContent = el('s-m').value + '%';
       el('v-pe').textContent = el('s-pe').value;
-      const revN = rev0 * Math.pow(1 + g, N);
-      const priceN = (revN * m / shares) * pe;              // EPS(year N) × exit P/E
+      el('v-n').textContent = el('s-n').value + (N === 1 ? ' yr' : ' yrs');
+      el('o-ny').textContent = N;
+      const epsN = eps0 * Math.pow(1 + g, N);                // EPS grows at the chosen CAGR
+      const priceN = epsN * pe;                              // exit price = EPS(year N) × exit P/E
       const intrinsic = priceN / Math.pow(1 + disc, N);      // discounted to today
       const upside = (intrinsic - price) / price * 100;
       const cagr = (Math.pow(priceN / price, 1 / N) - 1) * 100;
@@ -785,7 +785,7 @@ function renderStock(sym) {
       const upEl = el('o-up'); upEl.textContent = (upside >= 0 ? '+' : '') + upside.toFixed(0) + '%'; upEl.className = 'v ' + (upside >= 0 ? 'up' : 'down');
       const cEl = el('o-cagr'); cEl.textContent = (cagr >= 0 ? '+' : '') + cagr.toFixed(0) + '%'; cEl.className = 'v ' + (cagr >= 0 ? 'up' : 'down');
     }
-    ['s-g', 's-m', 's-pe'].forEach(id => el(id).addEventListener('input', calc));
+    ['s-g', 's-pe', 's-n'].forEach(id => el(id).addEventListener('input', calc));
     calc();
   })();
 
