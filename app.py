@@ -120,7 +120,7 @@ def _update(done, total):
     prog.progress(done / total, text=f"Loading fundamentals… {done}/{total}")
 
 
-fund = fetch.get_fundamentals(tickers, _progress=_update)
+fund = fetch.get_fundamentals(tickers, progress_cb=_update)
 prog.empty()
 
 # Live prices (short cache) overwrite the fundamentals' price snapshot.

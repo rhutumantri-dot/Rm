@@ -11,15 +11,21 @@ the "live prices, cached fundamentals" model:
 from __future__ import annotations
 
 import math
-from typing import Iterable
+import os
 
 import pandas as pd
 import streamlit as st
 import yfinance as yf
 
+from screener import demo
+
 PRICE_TTL = 45          # seconds
 FUNDAMENTALS_TTL = 900  # 15 minutes
 FINANCIALS_TTL = 900    # 15 minutes
+
+
+def _demo_mode() -> bool:
+    return os.environ.get("SCREENER_DEMO", "").strip() in ("1", "true", "yes")
 
 
 # --------------------------------------------------------------------------- #
@@ -30,6 +36,8 @@ def get_prices(tickers: tuple[str, ...]) -> dict[str, float]:
     """Return {ticker: latest_close} for the given tickers in one batch call."""
     if not tickers:
         return {}
+    if _demo_mode():
+        return {t: demo.live_price(t) for t in tickers}
     prices: dict[str, float] = {}
     try:
         data = yf.download(
@@ -85,18 +93,26 @@ def _one_fundamentals(ticker: str) -> dict:
 
 
 @st.cache_data(ttl=FUNDAMENTALS_TTL, show_spinner=False)
-def get_fundamentals(tickers: tuple[str, ...], _progress=None) -> pd.DataFrame:
+def _fundamentals_one(ticker: str) -> dict:
+    """Cached per-ticker fundamentals (demo or live)."""
+    return demo.fundamentals(ticker) if _demo_mode() else _one_fundamentals(ticker)
+
+
+def get_fundamentals(tickers: tuple[str, ...], progress_cb=None) -> pd.DataFrame:
     """Return a DataFrame indexed by ticker with fundamentals columns.
 
-    ``_progress`` (optional) is a callback ``(done, total)`` for a progress bar;
-    it is prefixed with ``_`` so Streamlit does not try to hash it for caching.
+    Not cached itself — it fans out to the cached per-ticker fetch, so repeated
+    reruns are cheap while a fresh scan still fills in one ticker at a time.
+    ``progress_cb`` is an optional ``(done, total)`` callback for a progress bar;
+    it is invoked here (in the caller's Streamlit context), never inside a cached
+    function, to avoid CacheReplayClosureError.
     """
     rows = {}
     total = len(tickers)
     for i, t in enumerate(tickers, start=1):
-        rows[t] = _one_fundamentals(t)
-        if _progress is not None:
-            _progress(i, total)
+        rows[t] = _fundamentals_one(t)
+        if progress_cb is not None:
+            progress_cb(i, total)
     df = pd.DataFrame.from_dict(rows, orient="index")
     df.index.name = "ticker"
     return df
@@ -126,6 +142,8 @@ def get_financials(ticker: str, period: str = "annual") -> pd.DataFrame:
             "gross_margin", "operating_margin", "net_margin",
         ]
     )
+    if _demo_mode():
+        return pd.DataFrame(demo.financials(ticker, period))
     try:
         tk = yf.Ticker(ticker)
         fin = tk.quarterly_financials if period == "quarterly" else tk.financials
