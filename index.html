@@ -7,32 +7,38 @@
 <style>
   :root {
     color-scheme: light;
-    --bg:#f4f4f2; --surface-1:#fcfcfb; --surface-2:#f0efec; --border:#e2e1dc;
-    --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#86857f;
+    --bg:#f4f5fb; --surface-1:#ffffff; --surface-2:#eef0f8; --surface-3:#f7f8fd; --border:#e4e6f1;
+    --text-primary:#0d0f18; --text-secondary:#4a4f64; --text-muted:#888ea4;
+    --accent:#5b4be0; --accent2:#2f7ef0;
     --series-1:#2a78d6; --series-2:#008300; --series-3:#e87ba4; --series-4:#eda100;
     --series-5:#1baf7a; --series-6:#eb6834; --series-7:#4a3aa7; --series-8:#e34948;
-    --grid:#e8e7e2; --good:#0ca30c; --critical:#d03b3b;
-    --shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px rgba(0,0,0,.05);
+    --grid:#e9ebf4; --good:#0ca30c; --critical:#d03b3b;
+    --glow: radial-gradient(58% 55% at 78% 32%, rgba(91,75,224,.16), transparent 70%);
+    --shadow:0 1px 2px rgba(20,22,50,.05), 0 10px 30px rgba(20,22,50,.06);
   }
   @media (prefers-color-scheme: dark) {
     :root:where(:not([data-theme="light"])) {
       color-scheme: dark;
-      --bg:#121211; --surface-1:#1a1a19; --surface-2:#232321; --border:#33322f;
-      --text-primary:#fff; --text-secondary:#c3c2b7; --text-muted:#8a897f;
+      --bg:#07080e; --surface-1:#12141e; --surface-2:#191c29; --surface-3:#0e1019; --border:#252a3b;
+      --text-primary:#f4f6fc; --text-secondary:#b4b9cc; --text-muted:#767c93;
+      --accent:#8b7bff; --accent2:#4d9bff;
       --series-1:#3987e5; --series-2:#008300; --series-3:#d55181; --series-4:#c98500;
       --series-5:#199e70; --series-6:#d95926; --series-7:#9085e9; --series-8:#e66767;
-      --grid:#2b2b28; --good:#34c034; --critical:#e35b5b;
-      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+      --grid:#232736; --good:#34c034; --critical:#e35b5b;
+      --glow: radial-gradient(58% 55% at 78% 28%, rgba(120,90,255,.24), transparent 70%);
+      --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 36px rgba(0,0,0,.45);
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --bg:#121211; --surface-1:#1a1a19; --surface-2:#232321; --border:#33322f;
-    --text-primary:#fff; --text-secondary:#c3c2b7; --text-muted:#8a897f;
+    --bg:#07080e; --surface-1:#12141e; --surface-2:#191c29; --surface-3:#0e1019; --border:#252a3b;
+    --text-primary:#f4f6fc; --text-secondary:#b4b9cc; --text-muted:#767c93;
+    --accent:#8b7bff; --accent2:#4d9bff;
     --series-1:#3987e5; --series-2:#008300; --series-3:#d55181; --series-4:#c98500;
     --series-5:#199e70; --series-6:#d95926; --series-7:#9085e9; --series-8:#e66767;
-    --grid:#2b2b28; --good:#34c034; --critical:#e35b5b;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    --grid:#232736; --good:#34c034; --critical:#e35b5b;
+    --glow: radial-gradient(58% 55% at 78% 28%, rgba(120,90,255,.24), transparent 70%);
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 36px rgba(0,0,0,.45);
   }
 
   * { box-sizing: border-box; }
@@ -42,57 +48,107 @@
   a { color: inherit; text-decoration: none; }
   .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 64px; }
 
-  header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
-  .brand { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-  .brand-mark { width: 40px; height: 40px; border-radius: 10px; flex: none;
-    background: linear-gradient(135deg, var(--series-1), var(--series-7));
-    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 18px; box-shadow: var(--shadow); }
-  .brand h1 { font-size: 18px; margin: 0; letter-spacing: -.2px; }
-  .brand p { margin: 0; font-size: 12.5px; color: var(--text-muted); }
+  header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px;
+    padding: 12px 0; position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(10px); }
+  .brand { display: flex; align-items: center; gap: 11px; cursor: pointer; }
+  .brand-mark { width: 38px; height: 38px; border-radius: 11px; flex: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 17px; box-shadow: 0 4px 14px rgba(90,75,224,.35); }
+  .brand h1 { font-size: 17px; margin: 0; letter-spacing: -.2px; }
+  .brand p { margin: 0; font-size: 12px; color: var(--text-muted); }
+  .nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .nav .navlink { font-size: 13.5px; font-weight: 600; color: var(--text-secondary); padding: 7px 12px; border-radius: 8px; cursor: pointer; }
+  .nav .navlink:hover { color: var(--text-primary); background: var(--surface-2); }
   .toggle { border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
-    border-radius: 999px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-weight: 600; }
+    border-radius: 999px; padding: 8px 13px; font-size: 13px; cursor: pointer; font-weight: 600; margin-left: 4px; }
   .toggle:hover { color: var(--text-primary); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; cursor: pointer;
+    font-size: 14px; font-weight: 700; padding: 12px 22px; border-radius: 12px; font-family: inherit; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; box-shadow: 0 6px 20px rgba(90,75,224,.34); }
+  .btn-primary:hover { filter: brightness(1.07); }
+  .btn-ghost { background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--accent); }
 
   .backlink { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary);
     font-weight: 600; margin-bottom: 14px; cursor: pointer; }
   .backlink:hover { color: var(--text-primary); }
 
-  /* ---------- HOME ---------- */
-  .home-head { margin-bottom: 20px; }
-  .home-head h2 { font-size: 24px; margin: 0 0 4px; letter-spacing: -.5px; }
-  .home-head p { margin: 0; color: var(--text-secondary); font-size: 14px; }
-  .section-title { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--text-muted); margin: 24px 2px 12px; font-weight: 700; }
-
-  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
-  .feature { display: block; background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px;
-    padding: 18px 20px; box-shadow: var(--shadow); transition: transform .12s, box-shadow .12s; position: relative; overflow: hidden; }
-  .feature::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--accent, var(--series-1)); }
-  .feature:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,.06), 0 14px 34px rgba(0,0,0,.10); }
-  .feature .frow { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-  .feature .fsym { font-weight: 800; font-size: 15px; letter-spacing: .3px; }
-  .feature .fname { color: var(--text-secondary); font-size: 13px; }
-  .feature .fprice { font-size: 26px; font-weight: 800; letter-spacing: -.5px; margin: 8px 0 2px; font-variant-numeric: tabular-nums; }
-  .feature .fmeta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; font-size: 12.5px; color: var(--text-secondary); }
-  .feature .fmeta b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
-  .feature .fopen { margin-top: 12px; font-size: 13px; font-weight: 700; color: var(--accent, var(--series-1)); }
+  /* ---------- LANDING (home) ---------- */
+  .section-title { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--text-muted); margin: 6px 2px 14px; font-weight: 700; }
+  .row-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 44px 2px 18px; }
+  .row-head h2 { font-size: 21px; margin: 0; letter-spacing: -.4px; }
+  .row-head a { font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; }
   .chg-up { color: var(--good); font-weight: 700; } .chg-down { color: var(--critical); font-weight: 700; }
-  .chip { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--text-secondary); }
+
+  .hero-land { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 30px; align-items: center; padding: 34px 0 40px; }
+  .hero-land::before { content:''; position:absolute; inset:-60px -120px auto -120px; height:560px; background: var(--glow); pointer-events:none; z-index:0; }
+  .hero-land > * { position: relative; z-index: 1; }
+  @media (max-width: 860px) { .hero-land { grid-template-columns: 1fr; } }
+  .eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    padding: 6px 13px; border-radius: 999px; margin-bottom: 20px; }
+  .hero-land h1 { font-size: 52px; line-height: 1.04; letter-spacing: -1.6px; margin: 0 0 18px; font-weight: 800; text-wrap: balance; }
+  .hero-land h1 .grad { background: linear-gradient(100deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  @media (max-width: 560px) { .hero-land h1 { font-size: 38px; } }
+  .hero-sub { font-size: 16.5px; color: var(--text-secondary); max-width: 44ch; margin: 0 0 26px; line-height: 1.55; }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  .hero-visual { position: relative; min-height: 360px; }
+  .fcard { position: absolute; background: color-mix(in srgb, var(--surface-1) 80%, transparent); backdrop-filter: blur(9px);
+    border: 1px solid var(--border); border-radius: 16px; padding: 15px 17px; box-shadow: var(--shadow); }
+  .fcard .fc-t { font-size: 12px; color: var(--text-muted); }
+  .fcard .fc-v { font-size: 22px; font-weight: 800; letter-spacing: -.5px; margin: 2px 0; font-variant-numeric: tabular-nums; }
+  .fc-rev { top: 0; right: 2%; width: 252px; }
+  .fc-roce { top: 188px; left: 0; width: 196px; }
+  .fc-np { top: 156px; right: 4%; width: 196px; }
+  @media (max-width: 860px) { .hero-visual { min-height: 320px; margin-top: 10px; } }
+  @media (max-width: 420px) { .fc-rev { right: 0; width: 220px; } .fc-np { right: 0; } }
+
+  .feat-scroll { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(228px, 1fr); gap: 16px; overflow-x: auto; padding: 4px 2px 14px; scroll-snap-type: x mandatory; }
+  .feat-scroll::-webkit-scrollbar { height: 8px; } .feat-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+  .fco { scroll-snap-align: start; background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 18px; box-shadow: var(--shadow);
+    cursor: pointer; transition: transform .12s, border-color .12s; display: flex; flex-direction: column; }
+  .fco:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .fco .logo { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 18px; margin: 0 auto 12px; }
+  .fco .fco-name { text-align: center; font-weight: 700; font-size: 14.5px; }
+  .fco .fco-price { text-align: center; font-size: 20px; font-weight: 800; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .fco .fco-chg { text-align: center; font-size: 12.5px; font-weight: 700; margin-top: 2px; }
+  .fco .fco-stats { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; display: flex; flex-direction: column; gap: 7px; }
+  .fco .fco-stats .r { display: flex; justify-content: space-between; font-size: 12.5px; }
+  .fco .fco-stats .r span { color: var(--text-muted); } .fco .fco-stats .r b { font-variant-numeric: tabular-nums; }
+  .fco.soon { cursor: default; opacity: .5; } .fco.soon:hover { transform: none; border-color: var(--border); }
+
+  .sector-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(178px, 1fr)); gap: 14px; }
+  .sector { position: relative; overflow: hidden; border: 1px solid var(--border); border-radius: 16px; padding: 16px; cursor: pointer;
+    min-height: 116px; display: flex; flex-direction: column; gap: 10px; transition: transform .12s, border-color .12s; }
+  .sector:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .sector .sicon { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; font-size: 18px; }
+  .sector .sname { font-weight: 700; font-size: 14.5px; margin-top: auto; }
+  .sector .scount { font-size: 12px; color: var(--text-muted); }
+
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .comp { border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; background: var(--surface-1); }
+  .comp.good { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); background: color-mix(in srgb, var(--accent) 6%, var(--surface-1)); }
+  .comp h4 { margin: 0 0 12px; font-size: 15px; } .comp.good h4 { color: var(--accent); }
+  .comp .li { display: flex; align-items: center; gap: 10px; font-size: 14px; padding: 7px 0; color: var(--text-secondary); }
+  .comp .li .ic { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; flex: none; color:#fff; }
 
   .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
-  .search { flex: 1; min-width: 200px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
-    border-radius: 10px; padding: 9px 13px; font-size: 14px; }
+  .search { flex: 1; min-width: 220px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+    border-radius: 11px; padding: 11px 15px; font-size: 14px; }
   .search::placeholder { color: var(--text-muted); }
   .secfilter { display: flex; gap: 6px; flex-wrap: wrap; }
   .secbtn { border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
     border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
-  .secbtn[aria-pressed="true"] { background: var(--series-1); color: #fff; border-color: transparent; }
+  .secbtn[aria-pressed="true"] { background: linear-gradient(135deg,var(--accent),var(--accent2)); color: #fff; border-color: transparent; }
 
-  .nifty-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 12px; }
-  .ncard { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 13px 15px; box-shadow: var(--shadow);
-    display: flex; flex-direction: column; gap: 3px; min-height: 92px; }
-  .ncard.loaded { cursor: pointer; border-color: color-mix(in srgb, var(--series-1) 40%, var(--border)); }
-  .ncard.loaded:hover { border-color: var(--series-1); }
-  .ncard.muted { opacity: .62; }
+  .nifty-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(212px, 1fr)); gap: 12px; }
+  .ncard { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 14px 15px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: 3px; min-height: 96px; transition: transform .12s, border-color .12s; }
+  .ncard.loaded { cursor: pointer; }
+  .ncard.loaded:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .ncard.muted { opacity: .5; }
   .ncard .nsym { font-weight: 800; font-size: 14px; letter-spacing: .3px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .ncard .nname { font-size: 12.5px; color: var(--text-secondary); line-height: 1.3; }
   .ncard .nsec { font-size: 11px; color: var(--text-muted); margin-top: auto; }
@@ -163,17 +219,22 @@
 <div class="wrap">
   <header class="top">
     <div class="brand" onclick="location.hash='#/'">
-      <div class="brand-mark">N</div>
+      <div class="brand-mark">◆</div>
       <div>
-        <h1>Nifty 50 Dashboards</h1>
-        <p>Company financials from Excel data</p>
+        <h1>Nifty 50 Visuals</h1>
+        <p>Financial statements, visualized</p>
       </div>
     </div>
-    <button class="toggle" id="themeBtn" type="button">◐ Theme</button>
+    <div class="nav">
+      <span class="navlink" data-scroll="companies">Companies</span>
+      <span class="navlink" data-scroll="sectors">Sectors</span>
+      <span class="navlink" data-scroll="why">Why us</span>
+      <button class="toggle" id="themeBtn" type="button">◐ Theme</button>
+    </div>
   </header>
   <div id="app"></div>
   <footer>
-    Nifty 50 company dashboards · financials rendered from Excel data.<br/>
+    Nifty 50 company dashboards.<br/>
     Constituent list is indicative and may lag index reconstitutions. For information only — not investment advice.
   </footer>
 </div>
@@ -182,7 +243,7 @@
 
 <script>
 /* ================================================================== *
- *  STOCKS — data extracted verbatim from the Excel exports.           *
+ *  STOCKS — company financial data.                                   *
  * ================================================================== */
 const FY = ['FY17','FY18','FY19','FY20','FY21','FY22','FY23','FY24','FY25','FY26'];
 const QLAB = ['Q3 FY24','Q4 FY24','Q1 FY25','Q2 FY25','Q3 FY25','Q4 FY25','Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'];
@@ -289,8 +350,10 @@ function kpis(st) {
   const roe = npLast / equity * 100, book = equity / shares;
   const divYield = (a.dividend.at(-1) / shares) / price * 100;
   const fyEnd = a.price.at(-1), chgPct = (price - fyEnd) / fyEnd * 100;
+  const cagr = arr => (Math.pow(arr.at(-1) / arr[0], 1 / (arr.length - 1)) - 1) * 100;
   return { shares, npLast, npPrev, eps, pe, roe, book, divYield, fyEnd, chgPct,
-           payout: a.dividend.at(-1) / npLast * 100, yoy: (npLast / npPrev - 1) * 100 };
+           payout: a.dividend.at(-1) / npLast * 100, yoy: (npLast / npPrev - 1) * 100,
+           revCAGR: cagr(a.sales), profitCAGR: cagr(a.netProfit) };
 }
 
 /* ================================================================== *
@@ -442,33 +505,120 @@ function groupedSignedBar(svgId, labels, series) {
  * ================================================================== */
 const app = document.getElementById('app');
 
+/* small inline visuals for the hero cards */
+function miniSpark(vals, w, h, col) {
+  const mn = Math.min(...vals), mx = Math.max(...vals), rg = mx - mn || 1;
+  const X = i => 5 + i / (vals.length - 1) * (w - 10), Y = v => h - 5 - (v - mn) / rg * (h - 10);
+  const d = vals.map((v, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1)).join(' ');
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;margin-top:8px"><path d="${d}" fill="none" stroke="${col}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${X(vals.length - 1).toFixed(1)}" cy="${Y(vals.at(-1)).toFixed(1)}" r="3.2" fill="${col}"/></svg>`;
+}
+function miniBars(vals, w, h, col) {
+  const mx = Math.max(...vals), bw = w / vals.length;
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:${h}px;margin-top:6px">` +
+    vals.map((v, i) => { const bh = Math.max(2, v / mx * (h - 4)); return `<rect x="${(i * bw + bw * 0.22).toFixed(1)}" y="${(h - bh).toFixed(1)}" width="${(bw * 0.56).toFixed(1)}" height="${bh.toFixed(1)}" rx="1.5" fill="${col}"/>`; }).join('') + `</svg>`;
+}
+function miniGauge(pct, cap, col) {
+  const R = 50, cx = 62, cy = 60;
+  const P = deg => [cx + R * Math.cos(deg * Math.PI / 180), cy - R * Math.sin(deg * Math.PI / 180)];
+  const arc = (a, b) => { const [x1, y1] = P(a), [x2, y2] = P(b); return `M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${R} ${R} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`; };
+  const tv = 180 * (1 - Math.min(pct, cap) / cap);
+  return `<svg viewBox="0 0 124 72" style="width:100%;max-width:150px;margin:4px auto 0;display:block">
+    <path d="${arc(180, 0)}" fill="none" stroke="var(--surface-2)" stroke-width="11" stroke-linecap="round"/>
+    <path d="${arc(180, tv)}" fill="none" stroke="${col}" stroke-width="11" stroke-linecap="round"/>
+    <text x="62" y="57" text-anchor="middle" font-size="21" font-weight="800" fill="var(--text-primary)">${pct.toFixed(0)}%</text></svg>`;
+}
+
 function renderHome() {
   const loaded = NIFTY50.filter(([s]) => STOCKS[s]);
-  const featured = loaded.map(([s]) => {
+  const t = STOCKS.TITAN, tk = kpis(t);
+
+  const featCards = loaded.map(([s]) => {
     const st = STOCKS[s], k = kpis(st), up = k.chgPct >= 0;
-    return `<a class="feature" href="#/stock/${s}" style="--accent:${st.accent}">
-      <div class="frow"><span class="fsym">${st.sym}</span><span class="chip">${st.sector}</span></div>
-      <div class="fname">${st.name}</div>
-      <div class="fprice">${inr(st.meta.currentPrice)}</div>
-      <div class="chg ${up ? 'up' : 'down'}"><span class="pill">${up ? '▲ +' : '▼ '}${k.chgPct.toFixed(1)}%</span>
-        <span style="color:var(--text-muted);font-weight:500;font-size:12.5px">vs FY26 close</span></div>
-      <div class="fmeta"><span>Mkt cap <b>${lcr(st.meta.marketCap)}</b></span><span>P/E <b>${k.pe.toFixed(1)}</b></span>
-        <span>ROE <b>${k.roe.toFixed(1)}%</b></span></div>
-      <div class="fopen">Open dashboard →</div>
-    </a>`;
+    return `<div class="fco" onclick="location.hash='#/stock/${s}'">
+      <div class="logo" style="background:linear-gradient(135deg,${st.accent},var(--accent2))">${s[0]}</div>
+      <div class="fco-name">${st.name}</div>
+      <div class="fco-price">${inr(st.meta.currentPrice)}</div>
+      <div class="fco-chg ${up ? 'chg-up' : 'chg-down'}">${up ? '▲ +' : '▼ '}${k.chgPct.toFixed(1)}%</div>
+      <div class="fco-stats">
+        <div class="r"><span>M.Cap</span><b>${lcr(st.meta.marketCap)}</b></div>
+        <div class="r"><span>ROE</span><b>${k.roe.toFixed(0)}%</b></div>
+        <div class="r"><span>Revenue CAGR</span><b>${k.revCAGR.toFixed(1)}%</b></div>
+        <div class="r"><span>Profit CAGR</span><b>${k.profitCAGR.toFixed(1)}%</b></div>
+      </div></div>`;
+  }).join('');
+  const soonCards = NIFTY50.filter(([s]) => !STOCKS[s]).slice(0, 4).map(([s, n]) =>
+    `<div class="fco soon">
+      <div class="logo" style="background:var(--surface-2);color:var(--text-muted)">${s[0]}</div>
+      <div class="fco-name">${n}</div>
+      <div class="fco-price" style="color:var(--text-muted)">—</div>
+      <div class="fco-chg" style="color:var(--text-muted)">Dashboard soon</div></div>`).join('');
+
+  const counts = {}; NIFTY50.forEach(([, , sec]) => counts[sec] = (counts[sec] || 0) + 1);
+  const secIcon = {
+    'Financial Services': ['🏦', 'var(--series-1)'], 'Information Technology': ['💻', 'var(--series-7)'],
+    'Automobile': ['🚗', 'var(--series-6)'], 'Healthcare': ['🩺', 'var(--series-5)'],
+    'FMCG': ['🧴', 'var(--series-4)'], 'Metals & Mining': ['⛏️', 'var(--series-8)'],
+    'Consumer': ['🛍️', 'var(--series-3)'], 'Consumer Durables': ['💎', 'var(--series-3)'],
+    'Energy': ['⚡', 'var(--series-4)'], 'Cement': ['🏗️', 'var(--series-2)'],
+    'Power': ['🔌', 'var(--series-4)'], 'Telecom': ['📡', 'var(--series-1)'],
+    'Construction': ['🏗️', 'var(--series-2)'], 'Capital Goods': ['⚙️', 'var(--series-5)'],
+    'Infrastructure': ['🛳️', 'var(--series-1)'],
+  };
+  const topSecs = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 6);
+  const sectorTiles = topSecs.map(sec => { const [ic, col] = secIcon[sec] || ['📊', 'var(--accent)'];
+    return `<div class="sector" data-sec="${sec}" style="background:linear-gradient(155deg, color-mix(in srgb,${col} 15%, var(--surface-1)), var(--surface-1))">
+      <div class="sicon" style="background:color-mix(in srgb,${col} 22%, transparent);color:${col}">${ic}</div>
+      <div><div class="sname">${sec}</div><div class="scount">${counts[sec]} companies</div></div></div>`;
   }).join('');
 
   const sectors = ['All', ...Array.from(new Set(NIFTY50.map(r => r[2]))).sort()];
   const secChips = sectors.map((s, i) => `<button class="secbtn" data-sec="${s}" aria-pressed="${i === 0}">${s}</button>`).join('');
+  const cross = x => `<div class="li"><span class="ic" style="background:var(--critical)">✕</span>${x}</div>`;
+  const check = x => `<div class="li"><span class="ic" style="background:var(--good)">✓</span>${x}</div>`;
 
   app.innerHTML = `
-    <div class="home-head">
-      <h2>Nifty 50 — Company Dashboards</h2>
-      <p>${loaded.length} of ${NIFTY50.length} companies loaded from Excel data. Click a loaded company to open its financial dashboard.</p>
+    <section class="hero-land">
+      <div>
+        <span class="eyebrow">✦ Modern investing for modern minds</span>
+        <h1>Financial statements,<br/><span class="grad">beautifully visualized.</span></h1>
+        <p class="hero-sub">Stop reading spreadsheets. Understand businesses through interactive visual stories — a decade of financials at a glance.</p>
+        <div class="hero-cta">
+          <button class="btn btn-primary" data-scroll="companies">Explore companies</button>
+          <button class="btn btn-ghost" onclick="location.hash='#/stock/TITAN'">See Titan →</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="fcard fc-rev">
+          <div class="fc-t">Revenue growth · Titan</div>
+          <div style="font-size:17px;font-weight:800;color:var(--good);margin-top:2px">+${tk.revCAGR.toFixed(1)}% <span style="color:var(--text-muted);font-weight:600;font-size:11px">10Y CAGR</span></div>
+          ${miniSpark(t.annual.sales, 224, 58, 'var(--accent)')}
+        </div>
+        <div class="fcard fc-roce">
+          <div class="fc-t">Return on equity</div>
+          ${miniGauge(tk.roe, 60, 'var(--series-5)')}
+        </div>
+        <div class="fcard fc-np">
+          <div class="fc-t">Net profit · Titan</div>
+          <div class="fc-v">${cr(tk.npLast)}</div>
+          <div style="font-size:12px;font-weight:700;color:var(--good)">+${tk.profitCAGR.toFixed(1)}% <span style="color:var(--text-muted);font-weight:600;font-size:11px">10Y CAGR</span></div>
+          ${miniBars(t.annual.netProfit, 164, 38, 'var(--series-7)')}
+        </div>
+      </div>
+    </section>
+
+    <div class="row-head"><h2>Featured companies</h2><a data-scroll="companies">View all →</a></div>
+    <div class="feat-scroll">${featCards}${soonCards}</div>
+
+    <div class="row-head" id="sectors"><h2>Trending sectors</h2><a data-scroll="companies">View all →</a></div>
+    <div class="sector-grid">${sectorTiles}</div>
+
+    <div class="row-head" id="why"><h2>Why visual dashboards?</h2></div>
+    <div class="compare">
+      <div class="comp"><h4>Plain spreadsheets</h4>${cross('Dense tables')}${cross('Confusing')}${cross('Static')}${cross('Hard to scan')}</div>
+      <div class="comp good"><h4>Nifty 50 Visuals</h4>${check('Interactive charts')}${check('Colour-coded')}${check('Values on every mark')}${check('Instantly readable')}</div>
     </div>
-    <div class="section-title">Loaded dashboards · ${loaded.length}</div>
-    <div class="feature-grid">${featured}</div>
-    <div class="section-title">All constituents · ${NIFTY50.length}</div>
+
+    <div class="row-head" id="companies"><h2>All Nifty 50 companies</h2><span style="font-size:13px;color:var(--text-muted)">${loaded.length} loaded · ${NIFTY50.length} total</span></div>
     <div class="controls">
       <input class="search" id="search" type="search" placeholder="Search company or ticker…" autocomplete="off" />
       <div class="secfilter" id="secfilter">${secChips}</div>
@@ -497,19 +647,20 @@ function renderHome() {
     }).join('') || `<div style="color:var(--text-muted);padding:20px">No companies match.</div>`;
   }
   draw();
+  function setSec(sec) { curSec = sec; document.querySelectorAll('.secbtn').forEach(x => x.setAttribute('aria-pressed', x.dataset.sec === sec)); draw(); }
   document.getElementById('search').addEventListener('input', e => { curQ = e.target.value.trim().toLowerCase(); draw(); });
-  document.getElementById('secfilter').addEventListener('click', e => {
-    const b = e.target.closest('.secbtn'); if (!b) return;
-    curSec = b.dataset.sec;
-    document.querySelectorAll('.secbtn').forEach(x => x.setAttribute('aria-pressed', x === b));
-    draw();
-  });
+  document.getElementById('secfilter').addEventListener('click', e => { const b = e.target.closest('.secbtn'); if (b) setSec(b.dataset.sec); });
+  app.querySelectorAll('.sector').forEach(el => el.addEventListener('click', () => {
+    setSec(el.dataset.sec); document.getElementById('companies').scrollIntoView({ behavior: 'smooth' });
+  }));
+  app.querySelectorAll('[data-scroll]').forEach(el => el.addEventListener('click', () => {
+    const target = document.getElementById(el.dataset.scroll); if (target) target.scrollIntoView({ behavior: 'smooth' });
+  }));
 }
 
-function chartCard(id, title, meta, src, tall) {
+function chartCard(id, title, meta, tall) {
   return `<div class="card"${tall ? ' style="grid-column:1/-1"' : ''}>
     <div class="card-head"><h3>${title}</h3><span class="meta">${meta}</span></div>
-    <div class="src">${src}</div>
     <svg id="${id}" viewBox="0 0 ${tall ? 1140 : 560} ${tall ? 300 : 260}" role="img" aria-label="${title}"></svg>
   </div>`;
 }
@@ -524,7 +675,7 @@ function renderStock(sym) {
   ];
   app.innerHTML = `
     <div class="backlink" onclick="location.hash='#/'">← All Nifty 50</div>
-    <div class="banner"><b>Data snapshot.</b> Figures from the Excel data for <b>${st.name}</b> — point-in-time, not a live feed.
+    <div class="banner"><b>Snapshot for ${st.name}.</b> Point-in-time figures, not a live feed —
       10 years of P&amp;L, 10 quarters, balance sheet &amp; cash flow. Amounts in ₹ crore unless noted; <b>FY</b> = year ended 31&nbsp;March.
       ${st.note ? '<br/><span style="color:var(--text-muted)">Note: ' + st.note + '</span>' : ''}</div>
     <section class="hero">
@@ -540,24 +691,21 @@ function renderStock(sym) {
     <section class="tiles">${tiles.map(t => `<div class="tile"><div class="k">${t.k}</div><div class="v">${t.v}</div><div class="sub">${t.sub}</div></div>`).join('')}</section>
     <div class="section-title">Each dataset — charted separately</div>
     <div class="charts">
-      ${chartCard('c-qrev','Quarterly sales','₹ Cr · 10 qtrs','Quarters → Sales')}
-      ${chartCard('c-qnp','Quarterly net profit','₹ Cr · 10 qtrs','Quarters → Net profit')}
-      ${chartCard('c-asales','Annual sales','₹ Cr · FY17–FY26','Profit &amp; Loss → Sales')}
-      ${chartCard('c-anp','Annual net profit','₹ Cr · FY17–FY26','Profit &amp; Loss → Net profit')}
-      ${chartCard('c-price','Share price — year-end','₹ · FY17 → now','PRICE + current price')}
-      ${chartCard('c-cfo','Cash from operating activity','₹ Cr · FY17–FY26','Cash Flow → Operating')}
+      ${chartCard('c-qrev','Quarterly sales','₹ Cr · 10 qtrs')}
+      ${chartCard('c-qnp','Quarterly net profit','₹ Cr · 10 qtrs')}
+      ${chartCard('c-asales','Annual sales','₹ Cr · FY17–FY26')}
+      ${chartCard('c-anp','Annual net profit','₹ Cr · FY17–FY26')}
+      ${chartCard('c-price','Share price — year-end','₹ · FY17 → now')}
+      ${chartCard('c-cfo','Cash from operating activity','₹ Cr · FY17–FY26')}
     </div>
     <div class="section-title" style="margin-top:26px">Balance sheet &amp; cash flow</div>
     <div class="charts">
       <div class="card"><div class="card-head"><h3>Net worth vs. borrowings</h3><span class="meta">₹ Cr · FY17–FY26</span></div>
-        <div class="src">Balance Sheet → Reserves + Capital, Borrowings</div>
         <svg id="c-nwb" viewBox="0 0 560 260" role="img" aria-label="Net worth vs borrowings"></svg>
         <div class="legend"><span><i class="swatch" style="background:var(--series-5)"></i> Net worth</span><span><i class="swatch" style="background:var(--series-8)"></i> Borrowings</span></div></div>
       <div class="card"><div class="card-head"><h3>${st.extra.label}</h3><span class="meta">₹ Cr · FY17–FY26</span></div>
-        <div class="src">${st.extra.src}</div>
         <svg id="c-extra" viewBox="0 0 560 260" role="img" aria-label="${st.extra.label}"></svg></div>
       <div class="card" style="grid-column:1/-1"><div class="card-head"><h3>Cash flow — operating · investing · financing</h3><span class="meta">₹ Cr · FY17–FY26</span></div>
-        <div class="src">Cash Flow (all three activities)</div>
         <svg id="c-cf3" viewBox="0 0 1140 300" role="img" aria-label="Cash flow by activity"></svg>
         <div class="legend"><span><i class="swatch" style="background:var(--series-1)"></i> Operating</span><span><i class="swatch" style="background:var(--series-4)"></i> Investing</span><span><i class="swatch" style="background:var(--series-7)"></i> Financing</span></div></div>
     </div>`;
@@ -598,6 +746,14 @@ document.getElementById('themeBtn').addEventListener('click', () => {
   document.documentElement.setAttribute('data-theme', next);
   route(); // re-render so SVG picks up themed colors
 });
+
+/* header nav → scroll to a home section (routing home first if needed) */
+document.querySelectorAll('header .navlink').forEach(el => el.addEventListener('click', () => {
+  const id = el.dataset.scroll;
+  const go = () => { const target = document.getElementById(id); if (target) target.scrollIntoView({ behavior: 'smooth' }); };
+  if (location.hash && location.hash !== '#/' && location.hash !== '') { location.hash = '#/'; setTimeout(go, 70); }
+  else go();
+}));
 </script>
 </body>
 </html>
