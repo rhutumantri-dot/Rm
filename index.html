@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Titan Company Ltd (NSE: TITAN) — Stock Dashboard</title>
+<title>Nifty 50 — Company Dashboards</title>
 <style>
   :root {
     color-scheme: light;
@@ -39,19 +39,69 @@
   html, body { margin: 0; }
   body { background: var(--bg); color: var(--text-primary);
     font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 64px; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 64px; }
 
   header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
-  .brand { display: flex; align-items: center; gap: 12px; }
-  .brand-mark { width: 42px; height: 42px; border-radius: 10px; flex: none;
+  .brand { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .brand-mark { width: 40px; height: 40px; border-radius: 10px; flex: none;
     background: linear-gradient(135deg, var(--series-1), var(--series-7));
-    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 20px; box-shadow: var(--shadow); }
-  .brand h1 { font-size: 19px; margin: 0; letter-spacing: -.2px; }
+    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 18px; box-shadow: var(--shadow); }
+  .brand h1 { font-size: 18px; margin: 0; letter-spacing: -.2px; }
   .brand p { margin: 0; font-size: 12.5px; color: var(--text-muted); }
   .toggle { border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
     border-radius: 999px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-weight: 600; }
   .toggle:hover { color: var(--text-primary); }
 
+  .backlink { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary);
+    font-weight: 600; margin-bottom: 14px; cursor: pointer; }
+  .backlink:hover { color: var(--text-primary); }
+
+  /* ---------- HOME ---------- */
+  .home-head { margin-bottom: 20px; }
+  .home-head h2 { font-size: 24px; margin: 0 0 4px; letter-spacing: -.5px; }
+  .home-head p { margin: 0; color: var(--text-secondary); font-size: 14px; }
+  .section-title { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--text-muted); margin: 24px 2px 12px; font-weight: 700; }
+
+  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+  .feature { display: block; background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px;
+    padding: 18px 20px; box-shadow: var(--shadow); transition: transform .12s, box-shadow .12s; position: relative; overflow: hidden; }
+  .feature::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--accent, var(--series-1)); }
+  .feature:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,.06), 0 14px 34px rgba(0,0,0,.10); }
+  .feature .frow { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .feature .fsym { font-weight: 800; font-size: 15px; letter-spacing: .3px; }
+  .feature .fname { color: var(--text-secondary); font-size: 13px; }
+  .feature .fprice { font-size: 26px; font-weight: 800; letter-spacing: -.5px; margin: 8px 0 2px; font-variant-numeric: tabular-nums; }
+  .feature .fmeta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; font-size: 12.5px; color: var(--text-secondary); }
+  .feature .fmeta b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  .feature .fopen { margin-top: 12px; font-size: 13px; font-weight: 700; color: var(--accent, var(--series-1)); }
+  .chg-up { color: var(--good); font-weight: 700; } .chg-down { color: var(--critical); font-weight: 700; }
+  .chip { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--text-secondary); }
+
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  .search { flex: 1; min-width: 200px; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+    border-radius: 10px; padding: 9px 13px; font-size: 14px; }
+  .search::placeholder { color: var(--text-muted); }
+  .secfilter { display: flex; gap: 6px; flex-wrap: wrap; }
+  .secbtn { border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
+    border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+  .secbtn[aria-pressed="true"] { background: var(--series-1); color: #fff; border-color: transparent; }
+
+  .nifty-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 12px; }
+  .ncard { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 13px 15px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: 3px; min-height: 92px; }
+  .ncard.loaded { cursor: pointer; border-color: color-mix(in srgb, var(--series-1) 40%, var(--border)); }
+  .ncard.loaded:hover { border-color: var(--series-1); }
+  .ncard.muted { opacity: .62; }
+  .ncard .nsym { font-weight: 800; font-size: 14px; letter-spacing: .3px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .ncard .nname { font-size: 12.5px; color: var(--text-secondary); line-height: 1.3; }
+  .ncard .nsec { font-size: 11px; color: var(--text-muted); margin-top: auto; }
+  .ncard .npill { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
+  .npill.on { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+  .npill.off { background: var(--surface-2); color: var(--text-muted); }
+  .ncard .nprice { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
+
+  /* ---------- DASHBOARD ---------- */
   .banner { background: color-mix(in srgb, var(--series-5) 12%, transparent);
     border: 1px solid color-mix(in srgb, var(--series-5) 38%, transparent);
     color: var(--text-secondary); border-radius: 10px; padding: 11px 15px; font-size: 12.5px; margin-bottom: 20px; }
@@ -60,18 +110,18 @@
 
   .hero { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px;
     padding: 20px 24px; box-shadow: var(--shadow); margin-bottom: 20px;
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 22px; align-items: center; }
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 22px; align-items: center; }
   .ticker-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
   .ticker { font-size: 14px; font-weight: 700; letter-spacing: .5px; color: var(--text-secondary); }
   .ticker-name { font-size: 13px; color: var(--text-muted); }
-  .price { font-size: 42px; font-weight: 800; letter-spacing: -1.5px; margin: 6px 0 4px; font-variant-numeric: tabular-nums; }
+  .price { font-size: 40px; font-weight: 800; letter-spacing: -1.5px; margin: 6px 0 4px; font-variant-numeric: tabular-nums; }
   .chg { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; flex-wrap: wrap; }
   .chg .pill { padding: 3px 9px; border-radius: 8px; font-size: 13px; }
   .up { color: var(--good); } .up .pill { background: color-mix(in srgb, var(--good) 15%, transparent); }
   .down { color: var(--critical); } .down .pill { background: color-mix(in srgb, var(--critical) 15%, transparent); }
   .capbox { text-align: right; }
   .capbox .k { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .4px; }
-  .capbox .v { font-size: 26px; font-weight: 800; letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
+  .capbox .v { font-size: 25px; font-weight: 800; letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
   @media (max-width: 560px) { .capbox { text-align: left; } }
 
   .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
@@ -81,13 +131,11 @@
   .tile .v { font-size: 22px; font-weight: 700; margin-top: 5px; letter-spacing: -.5px; font-variant-numeric: tabular-nums; }
   .tile .sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 
-  .section-title { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--text-muted); margin: 4px 2px 12px; font-weight: 700; }
-
   .charts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
   @media (max-width: 820px) { .charts { grid-template-columns: 1fr; } }
   .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 16px 18px 14px; box-shadow: var(--shadow); }
   .card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-  .card-head h2 { font-size: 15px; margin: 0; }
+  .card-head h3 { font-size: 15px; margin: 0; }
   .card-head .meta { font-size: 12px; color: var(--text-muted); }
   .src { font-size: 11px; color: var(--text-muted); margin: 3px 0 8px; }
   .src code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
@@ -114,115 +162,19 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand">
-      <div class="brand-mark">T</div>
+    <div class="brand" onclick="location.hash='#/'">
+      <div class="brand-mark">N</div>
       <div>
-        <h1>Titan Company Ltd</h1>
-        <p>NSE: TITAN · BSE: 500114 · Tata Group · Consumer Durables</p>
+        <h1>Nifty 50 Dashboards</h1>
+        <p>Company financials from Screener.in exports</p>
       </div>
     </div>
     <button class="toggle" id="themeBtn" type="button">◐ Theme</button>
   </header>
-
-  <div class="banner">
-    <b>Data snapshot.</b> Every figure is from the Screener.in export <code>Titan_Company.xlsx</code> — point-in-time, not a live feed.
-    Covers 10 years of P&amp;L, 10 quarters, balance sheet, cash flow and year-end prices. Amounts in ₹ crore unless noted; <b>FY</b> = year ended 31&nbsp;March.
-  </div>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div>
-      <div class="ticker-row"><span class="ticker">TITAN</span><span class="ticker-name">Titan Company Ltd · NSE</span></div>
-      <div class="price" id="h-price">₹0.00</div>
-      <div class="chg up" id="h-chg">
-        <span class="pill" id="h-chg-pct">+0.00%</span>
-        <span style="color:var(--text-muted);font-weight:500" id="h-chg-note">vs FY-end</span>
-      </div>
-    </div>
-    <div class="capbox">
-      <div class="k">Market Capitalisation</div>
-      <div class="v" id="h-cap">—</div>
-      <div class="k" style="margin-top:8px" id="h-shares">— cr shares · FV ₹1</div>
-    </div>
-  </section>
-
-  <!-- KPI TILES (derived from the sheet) -->
-  <section class="tiles" id="tiles"></section>
-
-  <div class="section-title">Each dataset — charted separately</div>
-
-  <div class="charts">
-    <div class="card">
-      <div class="card-head"><h2>Quarterly sales</h2><span class="meta">₹ Cr · 10 qtrs</span></div>
-      <div class="src">Data Sheet → Quarters → Sales</div>
-      <svg id="c-qrev" viewBox="0 0 560 260" role="img" aria-label="Quarterly sales"></svg>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>Quarterly net profit</h2><span class="meta">₹ Cr · 10 qtrs</span></div>
-      <div class="src">Data Sheet → Quarters → Net profit</div>
-      <svg id="c-qnp" viewBox="0 0 560 260" role="img" aria-label="Quarterly net profit"></svg>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>Annual sales</h2><span class="meta">₹ Cr · FY17–FY26</span></div>
-      <div class="src">Data Sheet → Profit &amp; Loss → Sales</div>
-      <svg id="c-asales" viewBox="0 0 560 260" role="img" aria-label="Annual sales"></svg>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>Annual net profit</h2><span class="meta">₹ Cr · FY17–FY26</span></div>
-      <div class="src">Data Sheet → Profit &amp; Loss → Net profit</div>
-      <svg id="c-anp" viewBox="0 0 560 260" role="img" aria-label="Annual net profit"></svg>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>Share price — year-end</h2><span class="meta">₹ · FY17 → now</span></div>
-      <div class="src">Data Sheet → PRICE (+ current price)</div>
-      <svg id="c-price" viewBox="0 0 560 260" role="img" aria-label="Year-end share price"></svg>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>Cash from operating activity</h2><span class="meta">₹ Cr · FY17–FY26</span></div>
-      <div class="src">Data Sheet → Cash Flow → Operating</div>
-      <svg id="c-cfo" viewBox="0 0 560 260" role="img" aria-label="Cash from operating activity"></svg>
-    </div>
-  </div>
-
-  <div class="section-title" style="margin-top:26px">Balance sheet &amp; cash flow</div>
-
-  <div class="charts">
-    <div class="card">
-      <div class="card-head"><h2>Net worth vs. borrowings</h2><span class="meta">₹ Cr · FY17–FY26</span></div>
-      <div class="src">Data Sheet → Balance Sheet → Reserves + Capital, Borrowings</div>
-      <svg id="c-nwb" viewBox="0 0 560 260" role="img" aria-label="Net worth versus borrowings"></svg>
-      <div class="legend">
-        <span><i class="swatch" style="background:var(--series-5)"></i> Net worth</span>
-        <span><i class="swatch" style="background:var(--series-8)"></i> Borrowings</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>Inventory</h2><span class="meta">₹ Cr · FY17–FY26</span></div>
-      <div class="src">Data Sheet → Balance Sheet → Inventory</div>
-      <svg id="c-inv" viewBox="0 0 560 260" role="img" aria-label="Inventory"></svg>
-    </div>
-
-    <div class="card" style="grid-column: 1 / -1;">
-      <div class="card-head"><h2>Cash flow — operating · investing · financing</h2><span class="meta">₹ Cr · FY17–FY26</span></div>
-      <div class="src">Data Sheet → Cash Flow (all three activities)</div>
-      <svg id="c-cf3" viewBox="0 0 1140 300" role="img" aria-label="Cash flow by activity"></svg>
-      <div class="legend">
-        <span><i class="swatch" style="background:var(--series-1)"></i> Operating</span>
-        <span><i class="swatch" style="background:var(--series-4)"></i> Investing</span>
-        <span><i class="swatch" style="background:var(--series-7)"></i> Financing</span>
-      </div>
-    </div>
-  </div>
-
+  <div id="app"></div>
   <footer>
-    Titan Company Ltd (NSE: TITAN) · charts rendered from <code>Titan_Company.xlsx</code> (Screener.in export).<br/>
-    For information only — not investment advice.
+    Nifty 50 company dashboards · financials rendered from Screener.in Excel exports.<br/>
+    Constituent list is indicative and may lag index reconstitutions. For information only — not investment advice.
   </footer>
 </div>
 
@@ -230,30 +182,86 @@
 
 <script>
 /* ================================================================== *
- *  DATA — extracted verbatim from Titan_Company.xlsx (Screener.in).   *
+ *  STOCKS — data extracted verbatim from Screener.in Excel exports.   *
  * ================================================================== */
-const META = { currentPrice: 4638.10, marketCap: 411764.1, equityCapital: 89.0, reserves: 15614.0, faceValue: 1 };
-
 const FY = ['FY17','FY18','FY19','FY20','FY21','FY22','FY23','FY24','FY25','FY26'];
-const ANNUAL = {
-  sales:     [13260.83,16119.77,19778.52,21052,21644,28799,40575,51084,60456,87584],
-  netProfit: [711.47,1130.09,1404.15,1501,973,2173,3250,3496,3337,5073],
-  price:     [462.75,942.30,1141.85,933.70,1558.05,2536.15,2514.90,3801.80,3063.35,3951.40],
-  dividend:  [230.83,332.92,443.90,356,356,667.5,890,979,979,1335],
-  cfo:       [1712.30,-51.12,1242.92,-348,4139,-724,1370,1695,-541,5590],
-  reserves:  [4143.60,5001.10,5981.37,6580,7408,9214,11762,9304,11535,15614],
-  capital:   [88.78,88.78,88.78,89,89,89,89,89,89,89],
-  borrowings:[1882.43,1691.01,2392.98,3562,5638,7275,9367,15528,20777,30621],
-  inventory: [4925.74,5924.84,7038.82,8103,8408,13609,16584,19051,28184,42743],
-  cfi:       [-953.15,97.62,-796.61,235,-2799,1165,-1814,-189,546,-2965],
-  cff:       [-165.60,-252.45,-488.83,-242,-1234,-403,457,-1329,-7,-2159],
-};
-ANNUAL.netWorth = ANNUAL.reserves.map((r, i) => r + ANNUAL.capital[i]);
 const QLAB = ['Q3 FY24','Q4 FY24','Q1 FY25','Q2 FY25','Q3 FY25','Q4 FY25','Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'];
-const QUARTER = {
-  sales:     [14164,12494,13266,14534,17740,14916,16523,18725,25416,26920],
-  netProfit: [1053,771,715,704,1047,871,1091,1120,1684,1179],
+
+const STOCKS = {
+  TITAN: {
+    name: 'Titan Company Ltd', sym: 'TITAN', exchange: 'NSE', sector: 'Consumer Durables',
+    sub: 'NSE: TITAN · BSE: 500114 · Tata Group', accent: 'var(--series-7)',
+    meta: { currentPrice: 4638.10, marketCap: 411764.1, faceValue: 1 },
+    annual: {
+      sales:     [13260.83,16119.77,19778.52,21052,21644,28799,40575,51084,60456,87584],
+      netProfit: [711.47,1130.09,1404.15,1501,973,2173,3250,3496,3337,5073],
+      price:     [462.75,942.30,1141.85,933.70,1558.05,2536.15,2514.90,3801.80,3063.35,3951.40],
+      dividend:  [230.83,332.92,443.90,356,356,667.5,890,979,979,1335],
+      cfo:       [1712.30,-51.12,1242.92,-348,4139,-724,1370,1695,-541,5590],
+      cfi:       [-953.15,97.62,-796.61,235,-2799,1165,-1814,-189,546,-2965],
+      cff:       [-165.60,-252.45,-488.83,-242,-1234,-403,457,-1329,-7,-2159],
+      reserves:  [4143.60,5001.10,5981.37,6580,7408,9214,11762,9304,11535,15614],
+      capital:   [88.78,88.78,88.78,89,89,89,89,89,89,89],
+      borrowings:[1882.43,1691.01,2392.98,3562,5638,7275,9367,15528,20777,30621],
+    },
+    quarter: { sales:[14164,12494,13266,14534,17740,14916,16523,18725,25416,26920],
+               netProfit:[1053,771,715,704,1047,871,1091,1120,1684,1179] },
+    extra: { label: 'Inventory', src: 'Balance Sheet → Inventory', color: 'var(--series-6)',
+             vals: [4925.74,5924.84,7038.82,8103,8408,13609,16584,19051,28184,42743] },
+  },
+  BAJFINANCE: {
+    name: 'Bajaj Finance Ltd', sym: 'BAJFINANCE', exchange: 'NSE', sector: 'Financial Services',
+    sub: 'NSE: BAJFINANCE · BSE: 500034 · Bajaj Group · NBFC', accent: 'var(--series-1)',
+    meta: { currentPrice: 1056.30, marketCap: 657647.55, faceValue: 1 },
+    note: 'As an NBFC (lender), cash from operations is structurally negative — loans disbursed are operating outflows, funded by financing inflows. That is normal, not a red flag.',
+    annual: {
+      sales:     [9970.04,12746.27,18487.14,26375.42,26672.87,31632.52,41411.21,54971.56,68831.64,81985.12],
+      netProfit: [1836.38,2496.37,3994.99,5263.75,4419.82,7028.23,11507.69,14451.17,16637.82,19017.39],
+      price:     [117.11,176.76,302.50,221.58,514.99,726.00,561.68,724.53,894.56,801.55],
+      dividend:  [196.87,230.06,346.11,599.95,601.60,1206.60,1813.35,2224.80,3476.76,3730.74],
+      cfo:       [-10438.95,-20565.59,-29061.53,-24411.70,-807.27,-37028.62,-42111.79,-72760.14,-67791.64,-65789.80],
+      cfi:       [-3046.76,1075.43,-5378.93,-8757.61,-428.55,6346.84,-10393.91,-7171.18,-2765.02,-3388.63],
+      cff:       [12513.43,19503.35,34449.31,34166.81,1740.63,32239.62,50675.01,82415.08,70164.61,67432.87],
+      reserves:  [9490.89,15732.81,19581.65,32207.64,36798.09,43592.03,54251.09,76571.75,96568.70,113377.23],
+      capital:   [109.37,115.03,115.37,119.99,120.32,120.66,120.89,123.60,124.17,621.79],
+      borrowings:[49249.54,66557.22,101587.85,129806.43,131633.54,165231.92,216690.49,293345.83,361248.65,435112.49],
+    },
+    quarter: { sales:[14163.6,14926.21,16100.05,17091.48,18035.11,18294.45,19523.88,20178.9,21013.49,21605.79],
+               netProfit:[3638.95,3824.53,3911.98,3999.73,4246.54,4479.57,4699.61,4875.36,3977.85,5464.57] },
+    extra: { label: 'Investments (treasury)', src: 'Balance Sheet → Investments', color: 'var(--series-6)',
+             vals: [4069.51,3139.43,8599.03,17543.90,18396.91,12245.54,22751.84,30880.65,34440.84,30577.80] },
+  },
 };
+Object.values(STOCKS).forEach(st => { st.annual.netWorth = st.annual.reserves.map((r, i) => r + st.annual.capital[i]); });
+
+/* Nifty 50 constituents (indicative). [ticker, name, sector] */
+const NIFTY50 = [
+  ['ADANIENT','Adani Enterprises','Metals & Mining'], ['ADANIPORTS','Adani Ports & SEZ','Infrastructure'],
+  ['APOLLOHOSP','Apollo Hospitals','Healthcare'], ['ASIANPAINT','Asian Paints','Consumer'],
+  ['AXISBANK','Axis Bank','Financial Services'], ['BAJAJ-AUTO','Bajaj Auto','Automobile'],
+  ['BAJFINANCE','Bajaj Finance','Financial Services'], ['BAJAJFINSV','Bajaj Finserv','Financial Services'],
+  ['BEL','Bharat Electronics','Capital Goods'], ['BHARTIARTL','Bharti Airtel','Telecom'],
+  ['CIPLA','Cipla','Healthcare'], ['COALINDIA','Coal India','Metals & Mining'],
+  ['DRREDDY',"Dr Reddy's Labs",'Healthcare'], ['EICHERMOT','Eicher Motors','Automobile'],
+  ['ETERNAL','Eternal (Zomato)','Consumer'], ['GRASIM','Grasim Industries','Cement'],
+  ['HCLTECH','HCL Technologies','Information Technology'], ['HDFCBANK','HDFC Bank','Financial Services'],
+  ['HDFCLIFE','HDFC Life Insurance','Financial Services'], ['HEROMOTOCO','Hero MotoCorp','Automobile'],
+  ['HINDALCO','Hindalco Industries','Metals & Mining'], ['HINDUNILVR','Hindustan Unilever','FMCG'],
+  ['ICICIBANK','ICICI Bank','Financial Services'], ['INDUSINDBK','IndusInd Bank','Financial Services'],
+  ['INFY','Infosys','Information Technology'], ['ITC','ITC','FMCG'],
+  ['JIOFIN','Jio Financial Services','Financial Services'], ['JSWSTEEL','JSW Steel','Metals & Mining'],
+  ['KOTAKBANK','Kotak Mahindra Bank','Financial Services'], ['LT','Larsen & Toubro','Construction'],
+  ['M&M','Mahindra & Mahindra','Automobile'], ['MARUTI','Maruti Suzuki','Automobile'],
+  ['NESTLEIND','Nestle India','FMCG'], ['NTPC','NTPC','Power'],
+  ['ONGC','Oil & Natural Gas','Energy'], ['POWERGRID','Power Grid Corp','Power'],
+  ['RELIANCE','Reliance Industries','Energy'], ['SBILIFE','SBI Life Insurance','Financial Services'],
+  ['SBIN','State Bank of India','Financial Services'], ['SHRIRAMFIN','Shriram Finance','Financial Services'],
+  ['SUNPHARMA','Sun Pharmaceutical','Healthcare'], ['TCS','Tata Consultancy Services','Information Technology'],
+  ['TATACONSUM','Tata Consumer Products','FMCG'], ['TATAMOTORS','Tata Motors','Automobile'],
+  ['TATASTEEL','Tata Steel','Metals & Mining'], ['TECHM','Tech Mahindra','Information Technology'],
+  ['TITAN','Titan Company','Consumer Durables'], ['TRENT','Trent','Consumer'],
+  ['ULTRACEMCO','UltraTech Cement','Cement'], ['WIPRO','Wipro','Information Technology'],
+];
 
 /* ---------- helpers ---------- */
 const inr = n => '₹' + n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -271,50 +279,32 @@ function showTip(html, x, y) {
 }
 const hideTip = () => tt.style.opacity = 0;
 
-/* ---------- HERO + derived KPI tiles ---------- */
-(function heroTiles() {
-  const shares = META.marketCap / META.currentPrice;            // ≈ 88.78 cr
-  const npLast = ANNUAL.netProfit.at(-1);
-  const eps = npLast / shares;
-  const pe = META.currentPrice / eps;
-  const equity = META.equityCapital + META.reserves;
-  const roe = npLast / equity * 100;
-  const bookValue = equity / shares;
-  const divYield = (ANNUAL.dividend.at(-1) / shares) / META.currentPrice * 100;
-  const fyEnd = ANNUAL.price.at(-1);
-  const chgPct = (META.currentPrice - fyEnd) / fyEnd * 100, up = chgPct >= 0;
+function kpis(st) {
+  const a = st.annual, price = st.meta.currentPrice;
+  const shares = st.meta.marketCap / price;
+  const npLast = a.netProfit.at(-1), npPrev = a.netProfit.at(-2);
+  const eps = npLast / shares, pe = price / eps;
+  const equity = a.capital.at(-1) + a.reserves.at(-1);
+  const roe = npLast / equity * 100, book = equity / shares;
+  const divYield = (a.dividend.at(-1) / shares) / price * 100;
+  const fyEnd = a.price.at(-1), chgPct = (price - fyEnd) / fyEnd * 100;
+  return { shares, npLast, npPrev, eps, pe, roe, book, divYield, fyEnd, chgPct,
+           payout: a.dividend.at(-1) / npLast * 100, yoy: (npLast / npPrev - 1) * 100 };
+}
 
-  document.getElementById('h-price').textContent = inr(META.currentPrice);
-  document.getElementById('h-chg').className = 'chg ' + (up ? 'up' : 'down');
-  document.getElementById('h-chg-pct').textContent = (up ? '▲ +' : '▼ ') + chgPct.toFixed(1) + '%';
-  document.getElementById('h-chg-note').textContent = 'vs FY26 close ' + inr(fyEnd);
-  document.getElementById('h-cap').textContent = lcr(META.marketCap);
-  document.getElementById('h-shares').textContent = shares.toFixed(2) + ' cr shares · FV ₹' + META.faceValue;
-
-  const items = [
-    { k: 'P/E Ratio',  v: pe.toFixed(1),  sub: 'EPS ' + inr(eps) },
-    { k: 'ROE',        v: roe.toFixed(1) + '%', sub: 'Book ' + inr(bookValue) },
-    { k: 'Div. Yield', v: divYield.toFixed(2) + '%', sub: 'Payout ' + Math.round(ANNUAL.dividend.at(-1) / npLast * 100) + '%' },
-    { k: 'Net Profit', v: cr(npLast), sub: 'FY26 · +' + Math.round((npLast / ANNUAL.netProfit.at(-2) - 1) * 100) + '% YoY' },
-  ];
-  document.getElementById('tiles').innerHTML = items.map(i =>
-    `<div class="tile"><div class="k">${i.k}</div><div class="v">${i.v}</div><div class="sub">${i.sub}</div></div>`).join('');
-})();
-
-/* ---------- reusable vertical bar chart (non-negative) ---------- */
+/* ================================================================== *
+ *  CHART RENDERERS                                                    *
+ * ================================================================== */
 function barChart(svgId, labels, values, opts) {
   const svg = document.getElementById(svgId);
   const { color, unit = '₹ Cr', fmt = v => v.toLocaleString('en-IN') } = opts;
   const n = values.length, W = 560, H = 260, pad = { l: 46, r: 12, t: 16, b: 40 };
-  const max = Math.max(...values) * 1.12;
-  const bw = (W - pad.l - pad.r) / n;
+  const max = Math.max(...values) * 1.12, bw = (W - pad.l - pad.r) / n;
   const y = v => pad.t + (1 - v / max) * (H - pad.t - pad.b);
   let grid = '';
-  for (let i = 0; i <= 4; i++) {
-    const val = i / 4 * max, yy = y(val);
+  for (let i = 0; i <= 4; i++) { const val = i / 4 * max, yy = y(val);
     grid += `<line class="gridline" x1="${pad.l}" y1="${yy.toFixed(1)}" x2="${W - pad.r}" y2="${yy.toFixed(1)}"/>`;
-    grid += `<text x="${pad.l - 8}" y="${(yy + 4).toFixed(1)}" text-anchor="end" fill="var(--text-muted)" font-size="11">${kfmt(val)}</text>`;
-  }
+    grid += `<text x="${pad.l - 8}" y="${(yy + 4).toFixed(1)}" text-anchor="end" fill="var(--text-muted)" font-size="11">${kfmt(val)}</text>`; }
   let bars = '', xlab = '';
   values.forEach((v, i) => {
     const x = pad.l + i * bw + bw * 0.16, w = bw * 0.68, h = (H - pad.t - pad.b) * (v / max);
@@ -325,62 +315,49 @@ function barChart(svgId, labels, values, opts) {
   });
   svg.innerHTML = `<g class="axis">${grid}${xlab}</g>${bars}`;
   svg.querySelectorAll('rect[data-i]').forEach(r => {
-    r.addEventListener('mousemove', e => {
-      const i = +r.dataset.i; r.setAttribute('opacity', '1');
-      showTip(`<div class="tt-h">${labels[i]}</div><div class="tt-row"><span>${unit}</span><b>${fmt(values[i])}</b></div>`, e.clientX, e.clientY);
-    });
+    r.addEventListener('mousemove', e => { const i = +r.dataset.i; r.setAttribute('opacity', '1');
+      showTip(`<div class="tt-h">${labels[i]}</div><div class="tt-row"><span>${unit}</span><b>${fmt(values[i])}</b></div>`, e.clientX, e.clientY); });
     r.addEventListener('mouseleave', () => { hideTip(); r.setAttribute('opacity', '0.92'); });
   });
 }
 
-/* ---------- signed bar chart (values cross zero) ---------- */
 function signedBarChart(svgId, labels, values, opts) {
   const svg = document.getElementById(svgId);
   const { pos, neg, unit = '₹ Cr' } = opts;
-  const n = values.length, W = 560, H = 260, pad = { l: 46, r: 12, t: 16, b: 26 };
+  const n = values.length, W = 560, H = 260, pad = { l: 50, r: 12, t: 16, b: 26 };
   const hi = Math.max(0, ...values), lo = Math.min(0, ...values), span = (hi - lo) || 1;
   const bw = (W - pad.l - pad.r) / n;
-  const y = v => pad.t + (1 - (v - lo) / span) * (H - pad.t - pad.b);
-  const y0 = y(0);
+  const y = v => pad.t + (1 - (v - lo) / span) * (H - pad.t - pad.b), y0 = y(0);
   let grid = '';
-  for (let i = 0; i <= 4; i++) {
-    const val = lo + i / 4 * span, yy = y(val);
+  for (let i = 0; i <= 4; i++) { const val = lo + i / 4 * span, yy = y(val);
     grid += `<line class="gridline" x1="${pad.l}" y1="${yy.toFixed(1)}" x2="${W - pad.r}" y2="${yy.toFixed(1)}"/>`;
-    grid += `<text x="${pad.l - 8}" y="${(yy + 4).toFixed(1)}" text-anchor="end" fill="var(--text-muted)" font-size="11">${kfmt(val)}</text>`;
-  }
+    grid += `<text x="${pad.l - 8}" y="${(yy + 4).toFixed(1)}" text-anchor="end" fill="var(--text-muted)" font-size="11">${kfmt(val)}</text>`; }
   grid += `<line class="zero" x1="${pad.l}" y1="${y0.toFixed(1)}" x2="${W - pad.r}" y2="${y0.toFixed(1)}"/>`;
   let bars = '', xlab = '';
   values.forEach((v, i) => {
-    const x = pad.l + i * bw + bw * 0.16, w = bw * 0.68;
-    const top = v >= 0 ? y(v) : y0, h = Math.abs(y(v) - y0);
-    bars += `<rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${w.toFixed(1)}" height="${Math.max(1, h).toFixed(1)}" rx="2.5" fill="${v >= 0 ? pos : neg}" opacity="0.92" data-i="${i}"/>`;
+    const x = pad.l + i * bw + bw * 0.16, w = bw * 0.68, top = v >= 0 ? y(v) : y0, h = Math.max(1, Math.abs(y(v) - y0));
+    bars += `<rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2.5" fill="${v >= 0 ? pos : neg}" opacity="0.92" data-i="${i}"/>`;
     xlab += `<text x="${(pad.l + i * bw + bw / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" fill="var(--text-muted)" font-size="10.5">${labels[i]}</text>`;
   });
   svg.innerHTML = `<g class="axis">${grid}${xlab}</g>${bars}`;
   svg.querySelectorAll('rect[data-i]').forEach(r => {
-    r.addEventListener('mousemove', e => {
-      const i = +r.dataset.i; r.setAttribute('opacity', '1');
-      const v = values[i];
-      showTip(`<div class="tt-h">${labels[i]}</div><div class="tt-row"><span>${unit}</span><b style="color:${v >= 0 ? 'var(--good)' : 'var(--critical)'}">${v >= 0 ? '+' : ''}${v.toLocaleString('en-IN')}</b></div>`, e.clientX, e.clientY);
-    });
+    r.addEventListener('mousemove', e => { const i = +r.dataset.i, v = values[i]; r.setAttribute('opacity', '1');
+      showTip(`<div class="tt-h">${labels[i]}</div><div class="tt-row"><span>${unit}</span><b style="color:${v >= 0 ? 'var(--good)' : 'var(--critical)'}">${v >= 0 ? '+' : ''}${v.toLocaleString('en-IN')}</b></div>`, e.clientX, e.clientY); });
     r.addEventListener('mouseleave', () => { hideTip(); r.setAttribute('opacity', '0.92'); });
   });
 }
 
-/* ---------- area line chart (price) ---------- */
 function areaChart(svgId, labels, values, opts) {
   const svg = document.getElementById(svgId);
-  const { color, unit = '₹', markLast } = opts;
+  const { color, markLast } = opts;
   const n = values.length, W = 560, H = 260, pad = { l: 48, r: 14, t: 18, b: 26 };
   const min = Math.min(...values) * 0.9, max = Math.max(...values) * 1.06, rng = max - min || 1;
   const x = i => pad.l + i / (n - 1) * (W - pad.l - pad.r);
   const y = v => pad.t + (1 - (v - min) / rng) * (H - pad.t - pad.b);
   let grid = '';
-  for (let i = 0; i <= 4; i++) {
-    const val = min + i / 4 * rng, yy = y(val);
+  for (let i = 0; i <= 4; i++) { const val = min + i / 4 * rng, yy = y(val);
     grid += `<line class="gridline" x1="${pad.l}" y1="${yy.toFixed(1)}" x2="${W - pad.r}" y2="${yy.toFixed(1)}"/>`;
-    grid += `<text x="${pad.l - 8}" y="${(yy + 4).toFixed(1)}" text-anchor="end" fill="var(--text-muted)" font-size="11">${kfmt(val)}</text>`;
-  }
+    grid += `<text x="${pad.l - 8}" y="${(yy + 4).toFixed(1)}" text-anchor="end" fill="var(--text-muted)" font-size="11">${kfmt(val)}</text>`; }
   let xlab = '';
   labels.forEach((l, i) => { if (i % 2 === 0 || i === n - 1)
     xlab += `<text x="${x(i).toFixed(1)}" y="${H - 8}" text-anchor="middle" fill="var(--text-muted)" font-size="10.5">${l}</text>`; });
@@ -400,7 +377,6 @@ function areaChart(svgId, labels, values, opts) {
   });
 }
 
-/* ---------- grouped bars (two non-negative series) ---------- */
 function groupedBarChart(svgId, labels, series) {
   const svg = document.getElementById(svgId);
   const n = labels.length, W = 560, H = 260, pad = { l: 46, r: 12, t: 16, b: 26 };
@@ -414,26 +390,22 @@ function groupedBarChart(svgId, labels, series) {
   let bars = '', xlab = '';
   labels.forEach((lab, i) => {
     const gx = pad.l + i * bw + bw * 0.14;
-    series.forEach((s, j) => {
-      const x = gx + j * iw, h = (H - pad.t - pad.b) * (s.vals[i] / max);
-      bars += `<rect x="${x.toFixed(1)}" y="${y(s.vals[i]).toFixed(1)}" width="${iw.toFixed(1)}" height="${h.toFixed(1)}" rx="2.5" fill="${s.color}" opacity="0.92" data-i="${i}" data-j="${j}"/>`;
-    });
+    series.forEach((s, j) => { const x = gx + j * iw, h = (H - pad.t - pad.b) * (s.vals[i] / max);
+      bars += `<rect x="${x.toFixed(1)}" y="${y(s.vals[i]).toFixed(1)}" width="${iw.toFixed(1)}" height="${h.toFixed(1)}" rx="2.5" fill="${s.color}" opacity="0.92" data-i="${i}"/>`; });
     xlab += `<text x="${(pad.l + i * bw + bw / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" fill="var(--text-muted)" font-size="10.5">${lab}</text>`;
   });
   svg.innerHTML = `<g class="axis">${grid}${xlab}</g>${bars}`;
   svg.querySelectorAll('rect[data-i]').forEach(r => {
     r.addEventListener('mousemove', e => { const i = +r.dataset.i; r.setAttribute('opacity', '1');
-      showTip(`<div class="tt-h">${labels[i]}</div>` + series.map(s =>
-        `<div class="tt-row"><span style="color:${s.color}">${s.name}</span><b>${cr(s.vals[i])}</b></div>`).join(''), e.clientX, e.clientY); });
+      showTip(`<div class="tt-h">${labels[i]}</div>` + series.map(s => `<div class="tt-row"><span style="color:${s.color}">${s.name}</span><b>${cr(s.vals[i])}</b></div>`).join(''), e.clientX, e.clientY); });
     r.addEventListener('mouseleave', () => { hideTip(); r.setAttribute('opacity', '0.92'); });
   });
 }
 
-/* ---------- grouped signed bars (several series, cross zero) ---------- */
 function groupedSignedBar(svgId, labels, series) {
   const svg = document.getElementById(svgId);
   const all = series.flatMap(s => s.vals);
-  const n = labels.length, W = 1140, H = 300, pad = { l: 52, r: 14, t: 16, b: 28 };
+  const n = labels.length, W = 1140, H = 300, pad = { l: 54, r: 14, t: 16, b: 28 };
   const hi = Math.max(0, ...all), lo = Math.min(0, ...all), span = (hi - lo) || 1;
   const bw = (W - pad.l - pad.r) / n, iw = bw * 0.76 / series.length;
   const y = v => pad.t + (1 - (v - lo) / span) * (H - pad.t - pad.b), y0 = y(0);
@@ -445,50 +417,179 @@ function groupedSignedBar(svgId, labels, series) {
   let bars = '', xlab = '';
   labels.forEach((lab, i) => {
     const gx = pad.l + i * bw + bw * 0.12;
-    series.forEach((s, j) => {
-      const v = s.vals[i], x = gx + j * iw, top = v >= 0 ? y(v) : y0, h = Math.max(1, Math.abs(y(v) - y0));
-      bars += `<rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${iw.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${s.color}" opacity="0.92" data-i="${i}"/>`;
-    });
+    series.forEach((s, j) => { const v = s.vals[i], x = gx + j * iw, top = v >= 0 ? y(v) : y0, h = Math.max(1, Math.abs(y(v) - y0));
+      bars += `<rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${iw.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${s.color}" opacity="0.92" data-i="${i}"/>`; });
     xlab += `<text x="${(pad.l + i * bw + bw / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" fill="var(--text-muted)" font-size="11">${lab}</text>`;
   });
   svg.innerHTML = `<g class="axis">${grid}${xlab}</g>${bars}`;
   svg.querySelectorAll('rect[data-i]').forEach(r => {
     r.addEventListener('mousemove', e => { const i = +r.dataset.i; r.setAttribute('opacity', '1');
-      showTip(`<div class="tt-h">${labels[i]}</div>` + series.map(s => {
-        const v = s.vals[i];
-        return `<div class="tt-row"><span style="color:${s.color}">${s.name}</span><b>${v >= 0 ? '+' : ''}${v.toLocaleString('en-IN')}</b></div>`;
-      }).join(''), e.clientX, e.clientY); });
+      showTip(`<div class="tt-h">${labels[i]}</div>` + series.map(s => { const v = s.vals[i];
+        return `<div class="tt-row"><span style="color:${s.color}">${s.name}</span><b>${v >= 0 ? '+' : ''}${v.toLocaleString('en-IN')}</b></div>`; }).join(''), e.clientX, e.clientY); });
     r.addEventListener('mouseleave', () => { hideTip(); r.setAttribute('opacity', '0.92'); });
   });
 }
 
-/* ---------- render everything ---------- */
-function renderAll() {
-  barChart('c-qrev',   QLAB, QUARTER.sales,     { color: 'var(--series-1)' });
-  barChart('c-qnp',    QLAB, QUARTER.netProfit, { color: 'var(--series-4)' });
-  barChart('c-asales', FY,   ANNUAL.sales,      { color: 'var(--series-1)' });
-  barChart('c-anp',    FY,   ANNUAL.netProfit,  { color: 'var(--series-5)' });
-  areaChart('c-price', [...FY, 'Now'], [...ANNUAL.price, META.currentPrice], { color: 'var(--series-7)', markLast: true });
-  signedBarChart('c-cfo', FY, ANNUAL.cfo, { pos: 'var(--good)', neg: 'var(--critical)' });
-  groupedBarChart('c-nwb', FY, [
-    { name: 'Net worth',  vals: ANNUAL.netWorth,   color: 'var(--series-5)' },
-    { name: 'Borrowings', vals: ANNUAL.borrowings, color: 'var(--series-8)' },
-  ]);
-  barChart('c-inv', FY, ANNUAL.inventory, { color: 'var(--series-6)' });
-  groupedSignedBar('c-cf3', FY, [
-    { name: 'Operating', vals: ANNUAL.cfo, color: 'var(--series-1)' },
-    { name: 'Investing', vals: ANNUAL.cfi, color: 'var(--series-4)' },
-    { name: 'Financing', vals: ANNUAL.cff, color: 'var(--series-7)' },
-  ]);
-}
-renderAll();
+/* ================================================================== *
+ *  VIEWS                                                              *
+ * ================================================================== */
+const app = document.getElementById('app');
 
-/* ---------- THEME ---------- */
+function renderHome() {
+  const loaded = NIFTY50.filter(([s]) => STOCKS[s]);
+  const featured = loaded.map(([s]) => {
+    const st = STOCKS[s], k = kpis(st), up = k.chgPct >= 0;
+    return `<a class="feature" href="#/stock/${s}" style="--accent:${st.accent}">
+      <div class="frow"><span class="fsym">${st.sym}</span><span class="chip">${st.sector}</span></div>
+      <div class="fname">${st.name}</div>
+      <div class="fprice">${inr(st.meta.currentPrice)}</div>
+      <div class="chg ${up ? 'up' : 'down'}"><span class="pill">${up ? '▲ +' : '▼ '}${k.chgPct.toFixed(1)}%</span>
+        <span style="color:var(--text-muted);font-weight:500;font-size:12.5px">vs FY26 close</span></div>
+      <div class="fmeta"><span>Mkt cap <b>${lcr(st.meta.marketCap)}</b></span><span>P/E <b>${k.pe.toFixed(1)}</b></span>
+        <span>ROE <b>${k.roe.toFixed(1)}%</b></span></div>
+      <div class="fopen">Open dashboard →</div>
+    </a>`;
+  }).join('');
+
+  const sectors = ['All', ...Array.from(new Set(NIFTY50.map(r => r[2]))).sort()];
+  const secChips = sectors.map((s, i) => `<button class="secbtn" data-sec="${s}" aria-pressed="${i === 0}">${s}</button>`).join('');
+
+  app.innerHTML = `
+    <div class="home-head">
+      <h2>Nifty 50 — Company Dashboards</h2>
+      <p>${loaded.length} of ${NIFTY50.length} companies loaded from Screener.in exports. Click a loaded company to open its financial dashboard.</p>
+    </div>
+    <div class="section-title">Loaded dashboards · ${loaded.length}</div>
+    <div class="feature-grid">${featured}</div>
+    <div class="section-title">All constituents · ${NIFTY50.length}</div>
+    <div class="controls">
+      <input class="search" id="search" type="search" placeholder="Search company or ticker…" autocomplete="off" />
+      <div class="secfilter" id="secfilter">${secChips}</div>
+    </div>
+    <div class="nifty-grid" id="niftyGrid"></div>`;
+
+  const grid = document.getElementById('niftyGrid');
+  let curSec = 'All', curQ = '';
+  function draw() {
+    const rows = NIFTY50.filter(([s, n, sec]) =>
+      (curSec === 'All' || sec === curSec) &&
+      (s.toLowerCase().includes(curQ) || n.toLowerCase().includes(curQ)));
+    grid.innerHTML = rows.map(([s, n, sec]) => {
+      const st = STOCKS[s];
+      if (st) { const k = kpis(st), up = k.chgPct >= 0;
+        return `<a class="ncard loaded" href="#/stock/${s}">
+          <div class="nsym">${s}<span class="npill on">Loaded</span></div>
+          <div class="nname">${n}</div>
+          <div class="nprice">${inr(st.meta.currentPrice)} <span class="${up ? 'chg-up' : 'chg-down'}" style="font-size:12px">${up ? '+' : ''}${k.chgPct.toFixed(1)}%</span></div>
+          <div class="nsec">${sec}</div></a>`;
+      }
+      return `<div class="ncard muted">
+        <div class="nsym">${s}<span class="npill off">No data</span></div>
+        <div class="nname">${n}</div>
+        <div class="nsec">${sec}</div></div>`;
+    }).join('') || `<div style="color:var(--text-muted);padding:20px">No companies match.</div>`;
+  }
+  draw();
+  document.getElementById('search').addEventListener('input', e => { curQ = e.target.value.trim().toLowerCase(); draw(); });
+  document.getElementById('secfilter').addEventListener('click', e => {
+    const b = e.target.closest('.secbtn'); if (!b) return;
+    curSec = b.dataset.sec;
+    document.querySelectorAll('.secbtn').forEach(x => x.setAttribute('aria-pressed', x === b));
+    draw();
+  });
+}
+
+function chartCard(id, title, meta, src, tall) {
+  return `<div class="card"${tall ? ' style="grid-column:1/-1"' : ''}>
+    <div class="card-head"><h3>${title}</h3><span class="meta">${meta}</span></div>
+    <div class="src">${src}</div>
+    <svg id="${id}" viewBox="0 0 ${tall ? 1140 : 560} ${tall ? 300 : 260}" role="img" aria-label="${title}"></svg>
+  </div>`;
+}
+
+function renderStock(sym) {
+  const st = STOCKS[sym], a = st.annual, k = kpis(st), up = k.chgPct >= 0;
+  const tiles = [
+    { k: 'P/E Ratio', v: k.pe.toFixed(1), sub: 'EPS ' + inr(k.eps) },
+    { k: 'ROE', v: k.roe.toFixed(1) + '%', sub: 'Book ' + inr(k.book) },
+    { k: 'Div. Yield', v: k.divYield.toFixed(2) + '%', sub: 'Payout ' + Math.round(k.payout) + '%' },
+    { k: 'Net Profit', v: cr(k.npLast), sub: 'FY26 · ' + (k.yoy >= 0 ? '+' : '') + Math.round(k.yoy) + '% YoY' },
+  ];
+  app.innerHTML = `
+    <div class="backlink" onclick="location.hash='#/'">← All Nifty 50</div>
+    <div class="banner"><b>Data snapshot.</b> Figures from the Screener.in export for <b>${st.name}</b> — point-in-time, not a live feed.
+      10 years of P&amp;L, 10 quarters, balance sheet &amp; cash flow. Amounts in ₹ crore unless noted; <b>FY</b> = year ended 31&nbsp;March.
+      ${st.note ? '<br/><span style="color:var(--text-muted)">Note: ' + st.note + '</span>' : ''}</div>
+    <section class="hero">
+      <div>
+        <div class="ticker-row"><span class="ticker">${st.sym}</span><span class="ticker-name">${st.sub}</span></div>
+        <div class="price">${inr(st.meta.currentPrice)}</div>
+        <div class="chg ${up ? 'up' : 'down'}"><span class="pill">${up ? '▲ +' : '▼ '}${k.chgPct.toFixed(1)}%</span>
+          <span style="color:var(--text-muted);font-weight:500">vs FY26 close ${inr(k.fyEnd)}</span></div>
+      </div>
+      <div class="capbox"><div class="k">Market Capitalisation</div><div class="v">${lcr(st.meta.marketCap)}</div>
+        <div class="k" style="margin-top:8px">${k.shares.toFixed(2)} cr shares · FV ₹${st.meta.faceValue}</div></div>
+    </section>
+    <section class="tiles">${tiles.map(t => `<div class="tile"><div class="k">${t.k}</div><div class="v">${t.v}</div><div class="sub">${t.sub}</div></div>`).join('')}</section>
+    <div class="section-title">Each dataset — charted separately</div>
+    <div class="charts">
+      ${chartCard('c-qrev','Quarterly sales','₹ Cr · 10 qtrs','Quarters → Sales')}
+      ${chartCard('c-qnp','Quarterly net profit','₹ Cr · 10 qtrs','Quarters → Net profit')}
+      ${chartCard('c-asales','Annual sales','₹ Cr · FY17–FY26','Profit &amp; Loss → Sales')}
+      ${chartCard('c-anp','Annual net profit','₹ Cr · FY17–FY26','Profit &amp; Loss → Net profit')}
+      ${chartCard('c-price','Share price — year-end','₹ · FY17 → now','PRICE + current price')}
+      ${chartCard('c-cfo','Cash from operating activity','₹ Cr · FY17–FY26','Cash Flow → Operating')}
+    </div>
+    <div class="section-title" style="margin-top:26px">Balance sheet &amp; cash flow</div>
+    <div class="charts">
+      <div class="card"><div class="card-head"><h3>Net worth vs. borrowings</h3><span class="meta">₹ Cr · FY17–FY26</span></div>
+        <div class="src">Balance Sheet → Reserves + Capital, Borrowings</div>
+        <svg id="c-nwb" viewBox="0 0 560 260" role="img" aria-label="Net worth vs borrowings"></svg>
+        <div class="legend"><span><i class="swatch" style="background:var(--series-5)"></i> Net worth</span><span><i class="swatch" style="background:var(--series-8)"></i> Borrowings</span></div></div>
+      <div class="card"><div class="card-head"><h3>${st.extra.label}</h3><span class="meta">₹ Cr · FY17–FY26</span></div>
+        <div class="src">${st.extra.src}</div>
+        <svg id="c-extra" viewBox="0 0 560 260" role="img" aria-label="${st.extra.label}"></svg></div>
+      <div class="card" style="grid-column:1/-1"><div class="card-head"><h3>Cash flow — operating · investing · financing</h3><span class="meta">₹ Cr · FY17–FY26</span></div>
+        <div class="src">Cash Flow (all three activities)</div>
+        <svg id="c-cf3" viewBox="0 0 1140 300" role="img" aria-label="Cash flow by activity"></svg>
+        <div class="legend"><span><i class="swatch" style="background:var(--series-1)"></i> Operating</span><span><i class="swatch" style="background:var(--series-4)"></i> Investing</span><span><i class="swatch" style="background:var(--series-7)"></i> Financing</span></div></div>
+    </div>`;
+
+  barChart('c-qrev', QLAB, st.quarter.sales, { color: 'var(--series-1)' });
+  barChart('c-qnp', QLAB, st.quarter.netProfit, { color: 'var(--series-4)' });
+  barChart('c-asales', FY, a.sales, { color: 'var(--series-1)' });
+  barChart('c-anp', FY, a.netProfit, { color: 'var(--series-5)' });
+  areaChart('c-price', [...FY, 'Now'], [...a.price, st.meta.currentPrice], { color: 'var(--series-7)', markLast: true });
+  signedBarChart('c-cfo', FY, a.cfo, { pos: 'var(--good)', neg: 'var(--critical)' });
+  groupedBarChart('c-nwb', FY, [
+    { name: 'Net worth', vals: a.netWorth, color: 'var(--series-5)' },
+    { name: 'Borrowings', vals: a.borrowings, color: 'var(--series-8)' }]);
+  barChart('c-extra', FY, st.extra.vals, { color: st.extra.color });
+  groupedSignedBar('c-cf3', FY, [
+    { name: 'Operating', vals: a.cfo, color: 'var(--series-1)' },
+    { name: 'Investing', vals: a.cfi, color: 'var(--series-4)' },
+    { name: 'Financing', vals: a.cff, color: 'var(--series-7)' }]);
+  scrollTo(0, 0);
+}
+
+/* ---------- router ---------- */
+function route() {
+  hideTip();
+  const h = location.hash.replace(/^#\/?/, '');
+  const m = h.match(/^stock\/(.+)$/);
+  if (m && STOCKS[m[1]]) renderStock(m[1]);
+  else renderHome();
+}
+window.addEventListener('hashchange', route);
+route();
+
+/* ---------- theme ---------- */
 document.getElementById('themeBtn').addEventListener('click', () => {
   const cur = document.documentElement.getAttribute('data-theme');
   const next = cur === 'dark' ? 'light' : cur === 'light' ? 'dark'
     : (matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark');
   document.documentElement.setAttribute('data-theme', next);
+  route(); // re-render so SVG picks up themed colors
 });
 </script>
 </body>
