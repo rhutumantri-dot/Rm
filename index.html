@@ -125,8 +125,8 @@
   </header>
 
   <div class="banner">
-    <b>Live data.</b> Figures sourced from the Screener.in export <code>Titan_Company.xlsx</code> — 10 years of P&amp;L, 10 quarters,
-    balance sheet, cash flow and year-end prices. All amounts in ₹ crore unless noted; <b>FY</b> = year ended 31&nbsp;March.
+    <b>Data snapshot.</b> Every figure is from the Screener.in export <code>Titan_Company.xlsx</code> — point-in-time, not a live feed.
+    Covers 10 years of P&amp;L, 10 quarters, balance sheet, cash flow and year-end prices. Amounts in ₹ crore unless noted; <b>FY</b> = year ended 31&nbsp;March.
   </div>
 
   <!-- HERO -->
@@ -189,6 +189,37 @@
     </div>
   </div>
 
+  <div class="section-title" style="margin-top:26px">Balance sheet &amp; cash flow</div>
+
+  <div class="charts">
+    <div class="card">
+      <div class="card-head"><h2>Net worth vs. borrowings</h2><span class="meta">₹ Cr · FY17–FY26</span></div>
+      <div class="src">Data Sheet → Balance Sheet → Reserves + Capital, Borrowings</div>
+      <svg id="c-nwb" viewBox="0 0 560 260" role="img" aria-label="Net worth versus borrowings"></svg>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--series-5)"></i> Net worth</span>
+        <span><i class="swatch" style="background:var(--series-8)"></i> Borrowings</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Inventory</h2><span class="meta">₹ Cr · FY17–FY26</span></div>
+      <div class="src">Data Sheet → Balance Sheet → Inventory</div>
+      <svg id="c-inv" viewBox="0 0 560 260" role="img" aria-label="Inventory"></svg>
+    </div>
+
+    <div class="card" style="grid-column: 1 / -1;">
+      <div class="card-head"><h2>Cash flow — operating · investing · financing</h2><span class="meta">₹ Cr · FY17–FY26</span></div>
+      <div class="src">Data Sheet → Cash Flow (all three activities)</div>
+      <svg id="c-cf3" viewBox="0 0 1140 300" role="img" aria-label="Cash flow by activity"></svg>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--series-1)"></i> Operating</span>
+        <span><i class="swatch" style="background:var(--series-4)"></i> Investing</span>
+        <span><i class="swatch" style="background:var(--series-7)"></i> Financing</span>
+      </div>
+    </div>
+  </div>
+
   <footer>
     Titan Company Ltd (NSE: TITAN) · charts rendered from <code>Titan_Company.xlsx</code> (Screener.in export).<br/>
     For information only — not investment advice.
@@ -210,7 +241,14 @@ const ANNUAL = {
   price:     [462.75,942.30,1141.85,933.70,1558.05,2536.15,2514.90,3801.80,3063.35,3951.40],
   dividend:  [230.83,332.92,443.90,356,356,667.5,890,979,979,1335],
   cfo:       [1712.30,-51.12,1242.92,-348,4139,-724,1370,1695,-541,5590],
+  reserves:  [4143.60,5001.10,5981.37,6580,7408,9214,11762,9304,11535,15614],
+  capital:   [88.78,88.78,88.78,89,89,89,89,89,89,89],
+  borrowings:[1882.43,1691.01,2392.98,3562,5638,7275,9367,15528,20777,30621],
+  inventory: [4925.74,5924.84,7038.82,8103,8408,13609,16584,19051,28184,42743],
+  cfi:       [-953.15,97.62,-796.61,235,-2799,1165,-1814,-189,546,-2965],
+  cff:       [-165.60,-252.45,-488.83,-242,-1234,-403,457,-1329,-7,-2159],
 };
+ANNUAL.netWorth = ANNUAL.reserves.map((r, i) => r + ANNUAL.capital[i]);
 const QLAB = ['Q3 FY24','Q4 FY24','Q1 FY25','Q2 FY25','Q3 FY25','Q4 FY25','Q1 FY26','Q2 FY26','Q3 FY26','Q4 FY26'];
 const QUARTER = {
   sales:     [14164,12494,13266,14534,17740,14916,16523,18725,25416,26920],
@@ -362,7 +400,69 @@ function areaChart(svgId, labels, values, opts) {
   });
 }
 
-/* ---------- render all six ---------- */
+/* ---------- grouped bars (two non-negative series) ---------- */
+function groupedBarChart(svgId, labels, series) {
+  const svg = document.getElementById(svgId);
+  const n = labels.length, W = 560, H = 260, pad = { l: 46, r: 12, t: 16, b: 26 };
+  const max = Math.max(...series.flatMap(s => s.vals)) * 1.12;
+  const bw = (W - pad.l - pad.r) / n, iw = bw * 0.72 / series.length;
+  const y = v => pad.t + (1 - v / max) * (H - pad.t - pad.b);
+  let grid = '';
+  for (let i = 0; i <= 4; i++) { const val = i / 4 * max, yy = y(val);
+    grid += `<line class="gridline" x1="${pad.l}" y1="${yy.toFixed(1)}" x2="${W - pad.r}" y2="${yy.toFixed(1)}"/>`;
+    grid += `<text x="${pad.l - 8}" y="${(yy + 4).toFixed(1)}" text-anchor="end" fill="var(--text-muted)" font-size="11">${kfmt(val)}</text>`; }
+  let bars = '', xlab = '';
+  labels.forEach((lab, i) => {
+    const gx = pad.l + i * bw + bw * 0.14;
+    series.forEach((s, j) => {
+      const x = gx + j * iw, h = (H - pad.t - pad.b) * (s.vals[i] / max);
+      bars += `<rect x="${x.toFixed(1)}" y="${y(s.vals[i]).toFixed(1)}" width="${iw.toFixed(1)}" height="${h.toFixed(1)}" rx="2.5" fill="${s.color}" opacity="0.92" data-i="${i}" data-j="${j}"/>`;
+    });
+    xlab += `<text x="${(pad.l + i * bw + bw / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" fill="var(--text-muted)" font-size="10.5">${lab}</text>`;
+  });
+  svg.innerHTML = `<g class="axis">${grid}${xlab}</g>${bars}`;
+  svg.querySelectorAll('rect[data-i]').forEach(r => {
+    r.addEventListener('mousemove', e => { const i = +r.dataset.i; r.setAttribute('opacity', '1');
+      showTip(`<div class="tt-h">${labels[i]}</div>` + series.map(s =>
+        `<div class="tt-row"><span style="color:${s.color}">${s.name}</span><b>${cr(s.vals[i])}</b></div>`).join(''), e.clientX, e.clientY); });
+    r.addEventListener('mouseleave', () => { hideTip(); r.setAttribute('opacity', '0.92'); });
+  });
+}
+
+/* ---------- grouped signed bars (several series, cross zero) ---------- */
+function groupedSignedBar(svgId, labels, series) {
+  const svg = document.getElementById(svgId);
+  const all = series.flatMap(s => s.vals);
+  const n = labels.length, W = 1140, H = 300, pad = { l: 52, r: 14, t: 16, b: 28 };
+  const hi = Math.max(0, ...all), lo = Math.min(0, ...all), span = (hi - lo) || 1;
+  const bw = (W - pad.l - pad.r) / n, iw = bw * 0.76 / series.length;
+  const y = v => pad.t + (1 - (v - lo) / span) * (H - pad.t - pad.b), y0 = y(0);
+  let grid = '';
+  for (let i = 0; i <= 4; i++) { const val = lo + i / 4 * span, yy = y(val);
+    grid += `<line class="gridline" x1="${pad.l}" y1="${yy.toFixed(1)}" x2="${W - pad.r}" y2="${yy.toFixed(1)}"/>`;
+    grid += `<text x="${pad.l - 8}" y="${(yy + 4).toFixed(1)}" text-anchor="end" fill="var(--text-muted)" font-size="11">${kfmt(val)}</text>`; }
+  grid += `<line class="zero" x1="${pad.l}" y1="${y0.toFixed(1)}" x2="${W - pad.r}" y2="${y0.toFixed(1)}"/>`;
+  let bars = '', xlab = '';
+  labels.forEach((lab, i) => {
+    const gx = pad.l + i * bw + bw * 0.12;
+    series.forEach((s, j) => {
+      const v = s.vals[i], x = gx + j * iw, top = v >= 0 ? y(v) : y0, h = Math.max(1, Math.abs(y(v) - y0));
+      bars += `<rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${iw.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${s.color}" opacity="0.92" data-i="${i}"/>`;
+    });
+    xlab += `<text x="${(pad.l + i * bw + bw / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" fill="var(--text-muted)" font-size="11">${lab}</text>`;
+  });
+  svg.innerHTML = `<g class="axis">${grid}${xlab}</g>${bars}`;
+  svg.querySelectorAll('rect[data-i]').forEach(r => {
+    r.addEventListener('mousemove', e => { const i = +r.dataset.i; r.setAttribute('opacity', '1');
+      showTip(`<div class="tt-h">${labels[i]}</div>` + series.map(s => {
+        const v = s.vals[i];
+        return `<div class="tt-row"><span style="color:${s.color}">${s.name}</span><b>${v >= 0 ? '+' : ''}${v.toLocaleString('en-IN')}</b></div>`;
+      }).join(''), e.clientX, e.clientY); });
+    r.addEventListener('mouseleave', () => { hideTip(); r.setAttribute('opacity', '0.92'); });
+  });
+}
+
+/* ---------- render everything ---------- */
 function renderAll() {
   barChart('c-qrev',   QLAB, QUARTER.sales,     { color: 'var(--series-1)' });
   barChart('c-qnp',    QLAB, QUARTER.netProfit, { color: 'var(--series-4)' });
@@ -370,6 +470,16 @@ function renderAll() {
   barChart('c-anp',    FY,   ANNUAL.netProfit,  { color: 'var(--series-5)' });
   areaChart('c-price', [...FY, 'Now'], [...ANNUAL.price, META.currentPrice], { color: 'var(--series-7)', markLast: true });
   signedBarChart('c-cfo', FY, ANNUAL.cfo, { pos: 'var(--good)', neg: 'var(--critical)' });
+  groupedBarChart('c-nwb', FY, [
+    { name: 'Net worth',  vals: ANNUAL.netWorth,   color: 'var(--series-5)' },
+    { name: 'Borrowings', vals: ANNUAL.borrowings, color: 'var(--series-8)' },
+  ]);
+  barChart('c-inv', FY, ANNUAL.inventory, { color: 'var(--series-6)' });
+  groupedSignedBar('c-cf3', FY, [
+    { name: 'Operating', vals: ANNUAL.cfo, color: 'var(--series-1)' },
+    { name: 'Investing', vals: ANNUAL.cfi, color: 'var(--series-4)' },
+    { name: 'Financing', vals: ANNUAL.cff, color: 'var(--series-7)' },
+  ]);
 }
 renderAll();
 
